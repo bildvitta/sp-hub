@@ -1,0 +1,48 @@
+{
+    "name": "bildvitta/sp-hub",
+    "require": {
+        "php": "^8.0|^8.1",
+        "illuminate/console": "^8.0|^9.0",
+        "illuminate/contracts": "^8.0|^9.0",
+        "illuminate/database": "^8.0|^9.0",
+        "php-amqplib/php-amqplib": "^3.2.0",
+        "spatie/laravel-package-tools": "^1.12"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.9",
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "BildVitta\\SpHub\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BildVitta\\SpHub\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "check-style": [
+            "vendor/bin/php-cs-fixer fix --config .php-cs-fixer.php --diff --verbose --dry-run"
+        ],
+        "fix-style": [
+            "vendor/bin/php-cs-fixer fix --config .php-cs-fixer.php"
+        ]
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "BildVitta\\SpHub\\SpHubServiceProvider"
+            ],
+            "aliases": {
+                "SpHub": "BildVitta\\SpHub\\Facades\\SpHub"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
