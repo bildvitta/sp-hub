@@ -15,6 +15,10 @@ class SpHubServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasCommands([
                 HubMessageWorkerCommand::class,
-            ]);
+            ])
+            ->hasMigrations([
+                'add_column_main_company_id_on_hub_companies',
+            ])
+            ->runsMigrations();
     }
 }
