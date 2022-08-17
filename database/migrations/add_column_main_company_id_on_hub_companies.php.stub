@@ -1,0 +1,28 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        if (Schema::hasTable('hub_companies')) {
+            if (!Schema::hasColumn('hub_companies', 'main_company_id')){
+                Schema::table('hub_companies', function (Blueprint $table) {
+                    $table->bigInteger('main_company_id')->nullable()->after('name');
+                });
+            }
+        }
+    }
+
+    public function down()
+    {
+        if (Schema::hasTable('hub_companies')) {
+            if (Schema::hasColumn('hub_companies', 'main_company_id')){
+                Schema::dropColumns('hub_companies', ['main_company_id']);
+            }
+        }
+    }
+};
