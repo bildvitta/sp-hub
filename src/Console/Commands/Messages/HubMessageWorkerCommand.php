@@ -1,8 +1,8 @@
 <?php
 
-namespace BildVitta\SpHub\Commands\Commands\Messages;
+namespace BildVitta\SpHub\Console\Commands\Messages;
 
-use BildVitta\SpHub\Commands\Commands\Messages\Resources\MessageProcessor;
+use BildVitta\SpHub\Console\Commands\Messages\Resources\MessageProcessor;
 use Illuminate\Console\Command;
 use PhpAmqpLib\Connection\AMQPSSLConnection;
 use PhpAmqpLib\Connection\AMQPStreamConnection;

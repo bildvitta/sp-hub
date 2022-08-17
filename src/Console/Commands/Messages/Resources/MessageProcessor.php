@@ -1,10 +1,10 @@
 <?php
 
-namespace BildVitta\SpHub\Commands\Commands\Messages\Resources;
+namespace BildVitta\SpHub\Console\Commands\Messages\Resources;
 
-use BildVitta\SpHub\Commands\Commands\Messages\Resources\Helpers\CompanyHelper;
-use BildVitta\SpHub\Commands\Commands\Messages\Resources\Helpers\LogHelper;
-use BildVitta\SpHub\Commands\Commands\Messages\Resources\Helpers\UserHelper;
+use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\CompanyHelper;
+use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\LogHelper;
+use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\UserHelper;
 use PhpAmqpLib\Message\AMQPMessage;
 use stdClass;
 use Throwable;
@@ -55,15 +55,15 @@ class MessageProcessor
         $operation = $properties[1];
 
         try {
-            switch($type) {
+            switch ($type) {
                 case self::USERS:
                     $this->users($messageData, $operation);
                     break;
                 case self::COMPANIES:
                     $this->companies($messageData, $operation);
-                    break;    
+                    break;
             }
-        } catch(Throwable $exception) {
+        } catch (Throwable $exception) {
             $this->logError($exception, $messageData);
         }
     }
@@ -75,14 +75,14 @@ class MessageProcessor
      */
     private function users(stdClass $message, string $operation): void
     {
-        switch($operation) {
+        switch ($operation) {
             case self::CREATED:
             case self::UPDATED:
                 $this->userCreateOrUpdate($message);
                 break;
             case self::DELETED:
                 $this->userDelete($message);
-                break;        
+                break;
         }
     }
 
@@ -93,14 +93,14 @@ class MessageProcessor
      */
     private function companies(stdClass $message, string $operation): void
     {
-        switch($operation) {
+        switch ($operation) {
             case self::CREATED:
             case self::UPDATED:
                 $this->companyCreateOrUpdate($message);
                 break;
             case self::DELETED:
                 $this->companyDelete($message);
-                break;        
+                break;
         }
     }
 }

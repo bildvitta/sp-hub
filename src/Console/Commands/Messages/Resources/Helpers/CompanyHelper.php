@@ -1,6 +1,6 @@
 <?php
 
-namespace BildVitta\SpHub\Commands\Commands\Messages\Resources\Helpers;
+namespace BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers;
 
 use App\Models\HubCompany;
 use stdClass;
