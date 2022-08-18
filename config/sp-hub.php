@@ -14,4 +14,11 @@ return [
             'hub' => env('RABBITMQ_QUEUE_HUB'),
         ]
     ],
+    'db' => [
+        'host' => env('HUB_DB_HOST', '127.0.0.1'),
+        'port' => env('HUB_DB_PORT', '3306'),
+        'database' => env('HUB_DB_DATABASE', 'forge'),
+        'username' => env('HUB_DB_USERNAME', 'forge'),
+        'password' => env('HUB_DB_PASSWORD', ''),
+    ],
 ];

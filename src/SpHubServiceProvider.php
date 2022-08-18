@@ -2,6 +2,7 @@
 
 namespace BildVitta\SpHub;
 
+use BildVitta\SpHub\Console\Commands\DataImport\Hub\HubImportCommand;
 use BildVitta\SpHub\Console\Commands\Messages\HubMessageWorkerCommand;
 use BildVitta\SpHub\Console\Commands\InstallSp;
 use Spatie\LaravelPackageTools\Package;
@@ -17,6 +18,7 @@ class SpHubServiceProvider extends PackageServiceProvider
             ->hasCommands([
                 HubMessageWorkerCommand::class,
                 InstallSp::class,
+                HubImportCommand::class,
             ])
             ->hasMigrations([
                 'add_column_main_company_id_on_hub_companies',
