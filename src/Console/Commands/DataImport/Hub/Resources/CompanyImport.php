@@ -19,6 +19,7 @@ class CompanyImport
         }
         $companyModel->name = $company->name;
         $companyModel->main_company_id = $company->main_company_id;
+        $companyModel->deleted_at = $company->deleted_at;
         $companyModel->save();
     }
 }
