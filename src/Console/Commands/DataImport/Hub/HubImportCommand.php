@@ -2,10 +2,7 @@
 
 namespace BildVitta\SpHub\Console\Commands\DataImport\Hub;
 
-use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\CompanyImport;
-use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubCompany;
-use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubUser;
-use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\UserImport;
+use BildVitta\SpHub\Console\Commands\DataImport\Hub\Jobs\HubImportJob;
 use Illuminate\Console\Command;
 
 class HubImportCommand extends Command
@@ -15,32 +12,7 @@ class HubImportCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'dataimport:hub';
-
-    /**
-     * @var DbHubUser
-     */
-    private DbHubUser $dbHubUser;
-
-    /**
-     * @var DbHubCompany
-     */
-    private DbHubCompany $dbHubCompany;
-
-    /**
-     * @var UserImport
-     */
-    private UserImport $userImport;
-
-    /**
-     * @var CompanyImport
-     */
-    private CompanyImport $companyImport;
-
-    /**
-     * @var int
-     */
-    private int $selectLimit = 200;
+    protected $signature = 'dataimport:hub {--select=500} {--offset=0} {--table=0}';
 
     /**
      * The console command description.
@@ -50,116 +22,55 @@ class HubImportCommand extends Command
     protected $description = 'Call init sync users in database';
 
     /**
-     * @param DbHubUser $dbHubUser
-     * @param UserImport $userImport
-     */
-    public function __construct(
-        DbHubUser $dbHubUser,
-        DbHubCompany $dbHubCompany,
-        UserImport $userImport,
-        CompanyImport $companyImport,
-    ) {
-        parent::__construct();
-        $this->dbHubUser = $dbHubUser;
-        $this->dbHubCompany = $dbHubCompany;
-        $this->userImport = $userImport;
-        $this->companyImport = $companyImport;
-    }
-
-    /**
      * Execute the console command.
      *
      * @return int
      */
     public function handle()
     {
-        $this->configConnection();
+        $this->info('Starting import');
+        
+        if (! class_exists('\App\Models\Worker')) {
+            $this->info('Error: class \App\Models\Worker not exists');
+            return 1;
+        }
 
-        $this->importCompanies();
+        $selectLimit = 500;
+        if ($optionSelect = $this->option('select')) {
+            $selectLimit = (int) $optionSelect;
+        }
 
-        $this->importUsers();
+        $offset = 0;
+        if ($optionOffset = $this->option('offset')) {
+            $offset = (int) $optionOffset;
+        }
+        
+        $tableIndex = 0;
+        if ($optionTableIndex = $this->option('table')) {
+            $tableIndex = (int) $optionTableIndex;
+        }
 
+        $worker = new \App\Models\Worker();
+        $worker->type = 'sp-hub.dataimport';
+        $worker->status = 'created';
+        $worker->schedule = now();
+        $worker->payload = [
+            'limit' => $selectLimit,
+            'offset' => $offset,
+            'total' => null,
+            'table_index' => $tableIndex,
+            'tables' => [
+                0 => 'companies',
+                1 => 'users',
+            ],
+        ];
+        $worker->save();
+
+        HubImportJob::dispatch($worker->id);
+
+        $this->info('Worker type: sp-hub.dataimport');
+        $this->info('Job started, command execution ended');
+ 
         return 0;
-    }
-
-    /**
-     * @return void
-     */
-    private function importCompanies(): void
-    {
-        $this->newLine();
-        $this->info('Starting import companies');
-        $totalRecords = $this->dbHubCompany->totalRecords();
-        $this->newLine();
-        $bar = $this->output->createProgressBar($totalRecords);
-        $bar->start();
-
-        $loop = ceil($totalRecords / $this->selectLimit);
-        for ($i = 0; $i < $loop; $i++) {
-            $offset = $this->selectLimit * $i;
-            $companies = collect($this->dbHubCompany->getCompanies($this->selectLimit, $offset));
-            foreach ($companies as $company) {
-                $this->companyImport->import($company);
-                $bar->advance(1);
-            }
-        }
-        $bar->finish();
-
-        $this->newLine(2);
-        $this->info('Import companies finished');
-        $this->newLine();
-    }
-
-    /**
-     * @return void
-     */
-    private function importUsers(): void
-    {
-        $this->newLine();
-        $this->info('Starting import users');
-        $totalRecords = $this->dbHubUser->totalRecords();
-        $this->newLine();
-        $bar = $this->output->createProgressBar($totalRecords);
-        $bar->start();
-
-        $loop = ceil($totalRecords / $this->selectLimit);
-        for ($i = 0; $i < $loop; $i++) {
-            $offset = $this->selectLimit * $i;
-            $users = collect($this->dbHubUser->getUsers($this->selectLimit, $offset));
-            foreach ($users as $user) {
-                $this->userImport->import($user);
-                $bar->advance(1);
-            }
-        }
-        $bar->finish();
-
-        $this->newLine(2);
-        $this->info('Import users finished');
-        $this->newLine();
-    }
-
-    /**
-     * @return void
-     */
-    private function configConnection(): void
-    {
-        config([
-            'database.connections.sp_hub' => [
-                'driver' => 'mysql',
-                'host' => config('sp-hub.db.host'),
-                'port' => config('sp-hub.db.port'),
-                'database' => config('sp-hub.db.database'),
-                'username' => config('sp-hub.db.username'),
-                'password' => config('sp-hub.db.password'),
-                'unix_socket' => env('DB_SOCKET', ''),
-                'charset' => 'utf8mb4',
-                'collation' => 'utf8mb4_unicode_ci',
-                'prefix' => '',
-                'prefix_indexes' => true,
-                'strict' => true,
-                'engine' => null,
-                'options' => [],
-            ]
-        ]);
     }
 }
