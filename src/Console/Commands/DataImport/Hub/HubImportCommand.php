@@ -12,12 +12,7 @@ class HubImportCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'dataimport:hub {--select=500}';
-
-    /**
-     * @var int
-     */
-    private int $selectLimit = 500;
+    protected $signature = 'dataimport:hub {--select=500} {--offset=0} {--table=0}';
 
     /**
      * The console command description.
@@ -40,8 +35,19 @@ class HubImportCommand extends Command
             return 1;
         }
 
-        if ($selectLimit = $this->option('select')) {
-            $this->selectLimit = (int) $selectLimit;
+        $selectLimit = 500;
+        if ($optionSelect = $this->option('select')) {
+            $selectLimit = (int) $optionSelect;
+        }
+
+        $offset = 0;
+        if ($optionOffset = $this->option('offset')) {
+            $offset = (int) $optionOffset;
+        }
+        
+        $tableIndex = 0;
+        if ($optionTableIndex = $this->option('table')) {
+            $tableIndex = (int) $optionTableIndex;
         }
 
         $worker = new \App\Models\Worker();
@@ -49,12 +55,14 @@ class HubImportCommand extends Command
         $worker->status = 'created';
         $worker->schedule = now();
         $worker->payload = [
-            'limit' => $this->selectLimit,
-            'offset' => 0,
+            'limit' => $selectLimit,
+            'offset' => $offset,
             'total' => null,
-            'current_table' => 'companies',
-            'finished_tables' => [],
-            'tables' => ['companies', 'users'],
+            'table_index' => $tableIndex,
+            'tables' => [
+                0 => 'companies',
+                1 => 'users',
+            ],
         ];
         $worker->save();
 

@@ -36,12 +36,17 @@ class HubImportJob implements ShouldQueue
      *
      * @var int
      */
-    public $timeout = 300;
+    public $timeout = 2700;
 
     /**
      * @var int
      */
     private int $workerId;
+
+    /**
+     * @var string
+     */
+    private string $currentTable;
 
     /**
      * @var Worker
@@ -70,7 +75,7 @@ class HubImportJob implements ShouldQueue
         }
         $this->init();
 
-        switch ($this->worker->payload->current_table) {
+        switch ($this->currentTable) {
             case 'companies':
                 $this->importCompanies();
                 break;
@@ -89,6 +94,7 @@ class HubImportJob implements ShouldQueue
     {
         $this->configConnection();
         $this->updateWorker(['status' => 'in_progress']);
+        $this->currentTable = $this->worker->payload->tables[$this->worker->payload->table_index];
     }
 
     /**
@@ -151,19 +157,17 @@ class HubImportJob implements ShouldQueue
             $this->updateWorker(['payload' => $payload]);
             HubImportJob::dispatch($this->worker->id);
         } else {
-            $payload->finished_tables[] = $payload->current_table;
-            $tables = array_diff($payload->tables, $payload->finished_tables);
-            if (count($tables)) {
-                $nextTable = array_shift($tables);
-                $payload->current_table = $nextTable;
+            $nextTableIndex = $payload->table_index + 1;
+            if (isset($payload->tables[$nextTableIndex])) {
+                $payload->table_index = $nextTableIndex;
                 $payload->offset = 0;
                 $payload->total = null;
                 $this->updateWorker(['payload' => $payload]);
                 HubImportJob::dispatch($this->worker->id);
             } else {
-                $payload->current_table = null;
-                $payload->offset = 0;
-                $payload->total = null;
+                unset($payload->table_index);
+                unset($payload->offset);
+                unset($payload->total);
                 $payload->finished_jobs = true;
                 $this->updateWorker(['payload' => $payload, 'status' => 'finished']);
             }
