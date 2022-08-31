@@ -13,7 +13,8 @@ class UserImport
      */
     public function import(stdClass $user): void
     {
-        $userModel = User::where('hub_uuid', $user->uuid)
+        $userModel = User::withTrashed()
+            ->where('hub_uuid', $user->uuid)
             ->orWhere('email', $user->email)
             ->first();
         if (! $userModel) {
@@ -24,6 +25,10 @@ class UserImport
         $userModel->name = $user->name;
         $userModel->email = $user->email;
         $userModel->avatar = $user->avatar;
+        $userModel->deleted_at = $user->deleted_at;
+        $userModel->is_active = $user->is_active;
+        $userModel->is_superuser = $user->is_superuser;
+        $userModel->company_id = $user->company_id;
         $userModel->save();
     }
 }

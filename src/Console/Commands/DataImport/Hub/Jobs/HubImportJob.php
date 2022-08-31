@@ -36,7 +36,12 @@ class HubImportJob implements ShouldQueue
      *
      * @var int
      */
-    public $timeout = 2700;
+    public $timeout = 3300;
+
+    /**
+     * @var int
+     */
+    public $retryAfter = 60;
 
     /**
      * @var int
