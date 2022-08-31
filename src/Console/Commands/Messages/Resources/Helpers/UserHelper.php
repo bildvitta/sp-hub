@@ -13,7 +13,7 @@ trait UserHelper
      */
     private function userCreateOrUpdate(stdClass $message): void
     {
-        if (!$user = User::where('hub_uuid', $message->uuid)->first()) {
+        if (!$user = User::withTrashed()->where('hub_uuid', $message->uuid)->first()) {
             $user = new User();
             $user->hub_uuid = $message->uuid;
             $user->password = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi';

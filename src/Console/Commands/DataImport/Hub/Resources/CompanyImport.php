@@ -13,7 +13,7 @@ class CompanyImport
      */
     public function import(stdClass $company): void
     {
-        if (!$companyModel = HubCompany::where('uuid', $company->uuid)->first()) {
+        if (!$companyModel = HubCompany::withTrashed()->where('uuid', $company->uuid)->first()) {
             $companyModel = new HubCompany();
             $companyModel->uuid = $company->uuid;
         }
