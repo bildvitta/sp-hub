@@ -22,6 +22,7 @@ class SpHubServiceProvider extends PackageServiceProvider
             ])
             ->hasMigrations([
                 'add_column_main_company_id_on_hub_companies',
+                'add_deleted_at_column_on_users_table',
             ])
             ->runsMigrations();
     }
