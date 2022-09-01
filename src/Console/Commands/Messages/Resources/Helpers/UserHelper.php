@@ -21,7 +21,7 @@ trait UserHelper
         $user->name = $message->name;
         $user->email = $message->email;
         $user->avatar = $message->avatar;
-        if (isset($message->company_id)) {
+        if (isset($message->is_superuser)) {
             $user->company_id = $message->company_id;
             $user->is_superuser = $message->is_superuser;
             $user->is_active = $message->is_active;
