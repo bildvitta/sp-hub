@@ -2,7 +2,7 @@
 
 namespace BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers;
 
-use App\Models\HubCompany;
+use BildVitta\SpHub\Models\HubCompany;
 use stdClass;
 
 trait CompanyHelper

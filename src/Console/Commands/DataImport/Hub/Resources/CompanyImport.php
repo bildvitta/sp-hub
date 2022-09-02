@@ -3,7 +3,7 @@
 namespace BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources;
 
 use stdClass;
-use App\Models\HubCompany;
+use BildVitta\SpHub\Models\HubCompany;
 
 class CompanyImport
 {

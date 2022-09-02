@@ -6,7 +6,9 @@
         "illuminate/contracts": "^8.0|^9.0",
         "illuminate/database": "^8.0|^9.0",
         "php-amqplib/php-amqplib": "^3.2.0",
-        "spatie/laravel-package-tools": "^1.12"
+        "spatie/laravel-package-tools": "^1.12",
+        "bildvitta/iss-sdk": "^0.0",
+        "ramsey/uuid": "^4.2.2"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.9",

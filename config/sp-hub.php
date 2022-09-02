@@ -21,4 +21,5 @@ return [
         'username' => env('HUB_DB_USERNAME', 'forge'),
         'password' => env('HUB_DB_PASSWORD', ''),
     ],
+    'model_user' => '\App\Models\User',
 ];

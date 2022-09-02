@@ -3,7 +3,6 @@
 namespace BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources;
 
 use stdClass;
-use App\Models\User;
 
 class UserImport
 {
@@ -13,12 +12,13 @@ class UserImport
      */
     public function import(stdClass $user): void
     {
-        $userModel = User::withTrashed()
+        $userClass = config('sp-hub.model_user');
+        $userModel = $userClass::withTrashed()
             ->where('hub_uuid', $user->uuid)
             ->orWhere('email', $user->email)
             ->first();
         if (! $userModel) {
-            $userModel = new User();
+            $userModel = new $userClass();
             $userModel->password = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi';
         }
         $userModel->hub_uuid = $user->uuid;
