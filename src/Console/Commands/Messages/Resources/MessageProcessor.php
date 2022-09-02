@@ -39,7 +39,6 @@ class MessageProcessor
      * @var string
      */
     public const DELETED = 'deleted';
-    
 
     /**
      * @param AMQPMessage $message
@@ -48,13 +47,16 @@ class MessageProcessor
     public function process(AMQPMessage $message): void
     {
         $message->ack();
-        $properties = $message->get_properties();
-        $messageData = json_decode($message->getBody());
-        $properties = explode('.', $properties['type']);
-        $type = $properties[0];
-        $operation = $properties[1];
-
+        $messageBody = null;
+        $messageData = null;
         try {
+            $properties = $message->get_properties();
+            $messageBody = $message->getBody();
+            $messageData = json_decode($messageBody);
+            $properties = explode('.', $properties['type']);
+            $type = $properties[0];
+            $operation = $properties[1];
+
             switch ($type) {
                 case self::USERS:
                     $this->users($messageData, $operation);
@@ -64,7 +66,10 @@ class MessageProcessor
                     break;
             }
         } catch (Throwable $exception) {
-            $this->logError($exception, $messageData);
+            $this->logError($exception, $messageBody);
+            if (app()->isLocal()) {
+                throw $exception;
+            }
         }
     }
 

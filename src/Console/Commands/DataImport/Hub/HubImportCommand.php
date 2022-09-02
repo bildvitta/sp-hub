@@ -3,10 +3,16 @@
 namespace BildVitta\SpHub\Console\Commands\DataImport\Hub;
 
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Jobs\HubImportJob;
+use BildVitta\SpHub\Models\Worker;
 use Illuminate\Console\Command;
 
 class HubImportCommand extends Command
 {
+    /**
+     * @var string
+     */
+    public const WORKER_TYPE = 'sp-hub.dataimport';
+
     /**
      * The name and signature of the console command.
      *
@@ -29,12 +35,7 @@ class HubImportCommand extends Command
     public function handle()
     {
         $this->info('Starting import');
-        
-        if (! class_exists('\App\Models\Worker')) {
-            $this->info('Error: class \App\Models\Worker not exists');
-            return 1;
-        }
-
+       
         $selectLimit = 500;
         if ($optionSelect = $this->option('select')) {
             $selectLimit = (int) $optionSelect;
@@ -50,9 +51,9 @@ class HubImportCommand extends Command
             $tableIndex = (int) $optionTableIndex;
         }
 
-        $worker = new \App\Models\Worker();
-        $worker->type = 'sp-hub.dataimport';
-        $worker->status = 'created';
+        $worker = new Worker();
+        $worker->type = self::WORKER_TYPE;
+        $worker->status = Worker::STATUS_CREATED;
         $worker->schedule = now();
         $worker->payload = [
             'limit' => $selectLimit,
@@ -68,7 +69,7 @@ class HubImportCommand extends Command
 
         HubImportJob::dispatch($worker->id);
 
-        $this->info('Worker type: sp-hub.dataimport');
+        $this->info('Worker type: ' . self::WORKER_TYPE);
         $this->info('Job started, command execution ended');
  
         return 0;

@@ -2,7 +2,6 @@
 
 namespace BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers;
 
-use App\Models\User;
 use stdClass;
 
 trait UserHelper
@@ -13,8 +12,9 @@ trait UserHelper
      */
     private function userCreateOrUpdate(stdClass $message): void
     {
-        if (!$user = User::withTrashed()->where('hub_uuid', $message->uuid)->first()) {
-            $user = new User();
+        $modelUser = config('sp-hub.model_user');
+        if (!$user = $modelUser::withTrashed()->where('hub_uuid', $message->uuid)->first()) {
+            $user = new $modelUser();
             $user->hub_uuid = $message->uuid;
             $user->password = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi';
         }
@@ -35,6 +35,7 @@ trait UserHelper
      */
     private function userDelete(stdClass $message): void
     {
-        User::where('hub_uuid', $message->uuid)->delete();
+        $modelUser = config('sp-hub.model_user');
+        $modelUser::where('hub_uuid', $message->uuid)->delete();
     }
 }
