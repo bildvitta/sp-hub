@@ -19,6 +19,11 @@ return new class extends Migration
                 $table->boolean('is_active')->default(true);
             });
         }
+        if (!Schema::hasColumn($userModel->getTable(), 'avatar')) {
+            Schema::table($userModel->getTable(), function (Blueprint $table) {
+                $table->string('avatar')->nullable();
+            });
+        }
     }
 
     public function down()
@@ -29,9 +34,14 @@ return new class extends Migration
                 $table->dropSoftDeletes();
             });
         }
-        if (!Schema::hasColumn($userModel->getTable(), 'is_active')) {
+        if (Schema::hasColumn($userModel->getTable(), 'is_active')) {
             Schema::table($userModel->getTable(), function (Blueprint $table) {
                 $table->dropColumn('is_active');
+            });
+        }
+        if (Schema::hasColumn($userModel->getTable(), 'avatar')) {
+            Schema::table($userModel->getTable(), function (Blueprint $table) {
+                $table->dropColumn('avatar');
             });
         }
     }

@@ -2,6 +2,7 @@
 
 namespace BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers;
 
+use BildVitta\SpHub\Models\Worker;
 use Throwable;
 
 trait LogHelper
@@ -14,12 +15,12 @@ trait LogHelper
     private function logError(Throwable $exception, $message): void
     {
         try {
-            $worker = new \App\Models\Worker();
+            $worker = new Worker();
             $worker->type = 'rabbitmq.worker.error';
             $worker->payload = [
                 'message' => $message
             ];
-            $worker->status = 'error';
+            $worker->status = Worker::STATUS_ERROR;
             $worker->error = [
                 'message' => $exception->getMessage(),
                 'file' => $exception->getFile(),

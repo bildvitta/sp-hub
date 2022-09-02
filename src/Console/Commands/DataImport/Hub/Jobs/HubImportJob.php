@@ -7,7 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Models\Worker;
+use BildVitta\SpHub\Models\Worker;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\CompanyImport;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\ConfigConnection;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubCompany;
