@@ -2,6 +2,7 @@
 
 namespace BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources;
 
+use BildVitta\SpHub\Models\HubCompany;
 use stdClass;
 
 class UserImport
@@ -28,7 +29,24 @@ class UserImport
         $userModel->deleted_at = $user->deleted_at;
         $userModel->is_active = $user->is_active;
         $userModel->is_superuser = $user->is_superuser;
-        $userModel->company_id = $user->company_id;
+        $userModel->company_id = $this->getCompanyId($user->hub_company_uuid);
         $userModel->save();
+    }
+
+    /**
+     * @param string|null $hubCompanyUuid
+     * @return int|null
+     */
+    private function getCompanyId(?string $hubCompanyUuid): ?int
+    {
+        if ($hubCompanyUuid) {
+            $hubCompany = HubCompany::withTrashed()
+                ->where('uuid', $hubCompanyUuid)
+                ->first();
+            if ($hubCompany) {
+                return $hubCompany->id;
+            }
+        }
+        return null;
     }
 }
