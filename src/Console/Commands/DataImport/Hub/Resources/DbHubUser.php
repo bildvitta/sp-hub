@@ -24,7 +24,12 @@ class DbHubUser
      */
     public function getUsers(int $limit, int $offset): array
     {
-        $query = "SELECT * FROM users LIMIT :limit OFFSET :offset";
+        $query = "SELECT users.*, companies.uuid AS hub_company_uuid 
+            FROM users 
+            LEFT JOIN companies
+            ON users.company_id = companies.id
+            LIMIT :limit 
+            OFFSET :offset";
 
         return DB::connection('sp_hub')->select($query, [
             'limit' => $limit,

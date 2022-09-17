@@ -2,6 +2,7 @@
 
 namespace BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers;
 
+use BildVitta\SpHub\Models\HubCompany;
 use stdClass;
 
 trait UserHelper
@@ -22,7 +23,7 @@ trait UserHelper
         $user->email = $message->email;
         $user->avatar = $message->avatar;
         if (isset($message->is_superuser)) {
-            $user->company_id = $message->company_id;
+            $user->company_id = $this->getCompanyId($message->company_uuid);
             $user->is_superuser = $message->is_superuser;
             $user->is_active = $message->is_active;
         }
@@ -37,5 +38,22 @@ trait UserHelper
     {
         $modelUser = config('sp-hub.model_user');
         $modelUser::where('hub_uuid', $message->uuid)->delete();
+    }
+
+    /**
+     * @param string|null $hubCompanyUuid
+     * @return int|null
+     */
+    private function getCompanyId(?string $hubCompanyUuid): ?int
+    {
+        if ($hubCompanyUuid) {
+            $hubCompany = HubCompany::withTrashed()
+                ->where('uuid', $hubCompanyUuid)
+                ->first();
+            if ($hubCompany) {
+                return $hubCompany->id;
+            }
+        }
+        return null;
     }
 }
