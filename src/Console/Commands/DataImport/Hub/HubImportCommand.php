@@ -18,7 +18,7 @@ class HubImportCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'dataimport:hub {--select=500} {--offset=0} {--table=0}';
+    protected $signature = 'dataimport:hub {--select=500} {--offset=0} {--tables=companies,users}';
 
     /**
      * The console command description.
@@ -47,9 +47,7 @@ class HubImportCommand extends Command
         }
         
         $tableIndex = 0;
-        if ($optionTableIndex = $this->option('table')) {
-            $tableIndex = (int) $optionTableIndex;
-        }
+        $tables = explode(',', $this->option('tables'));
 
         $worker = new Worker();
         $worker->type = self::WORKER_TYPE;
@@ -60,10 +58,7 @@ class HubImportCommand extends Command
             'offset' => $offset,
             'total' => null,
             'table_index' => $tableIndex,
-            'tables' => [
-                0 => 'companies',
-                1 => 'users',
-            ],
+            'tables' => $tables,
         ];
         $worker->save();
 

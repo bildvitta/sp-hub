@@ -18,7 +18,10 @@ trait CompanyHelper
             $company->uuid = $message->uuid;
         }
         $company->name = $message->name;
-        $company->main_company_id = $message->main_company_id;
+        $company->main_company_id = $message->main_company_id ?? null;
+        if (isset($message->main_company_uuid)) {
+            $company->main_company_id = HubCompany::withTrashed()->where('uuid', $message->main_company_uuid)->value('id');
+        }
         $company->save();
     }
 
