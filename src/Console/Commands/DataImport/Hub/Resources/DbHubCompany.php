@@ -24,7 +24,7 @@ class DbHubCompany
      */
     public function getCompanies(int $limit, int $offset): array
     {
-        $query = "SELECT * FROM companies LIMIT :limit OFFSET :offset";
+        $query = "SELECT a.*, b.uuid AS main_company_uuid FROM companies a LEFT JOIN companies b ON a.main_company_id = b.id LIMIT :limit OFFSET :offset";
 
         return DB::connection('sp_hub')->select($query, [
             'limit' => $limit,
