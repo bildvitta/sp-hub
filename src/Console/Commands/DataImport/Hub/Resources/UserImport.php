@@ -4,6 +4,7 @@ namespace BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources;
 
 use BildVitta\SpHub\Models\HubCompany;
 use stdClass;
+use Illuminate\Support\Str;
 
 class UserImport
 {
@@ -16,7 +17,6 @@ class UserImport
         $userClass = config('sp-hub.model_user');
         $userModel = $userClass::withTrashed()
             ->where('hub_uuid', $user->uuid)
-            ->orWhere('email', $user->email)
             ->first();
         if (! $userModel) {
             $userModel = new $userClass();
@@ -30,6 +30,9 @@ class UserImport
         $userModel->is_active = $user->is_active;
         $userModel->is_superuser = $user->is_superuser;
         $userModel->company_id = $this->getCompanyId($user->hub_company_uuid);
+
+        $this->checkExistingEmail($user->email, $user->uuid);
+
         $userModel->save();
     }
 
@@ -48,5 +51,23 @@ class UserImport
             }
         }
         return null;
+    }
+
+    /**
+     * @param string $email
+     * @param string $hubUuid
+     * @return void
+     */
+    private function checkExistingEmail(string $email, string $hubUuid): void
+    {
+        $userClass = config('sp-hub.model_user');
+        $userWithDuplicatedEmail = $userClass::withTrashed()
+            ->where('hub_uuid', '!=', $hubUuid)
+            ->where('email', $email)
+            ->first();
+        if ($userWithDuplicatedEmail) {
+            $userWithDuplicatedEmail->email = sprintf('duplicated_%s|%s', Str::lower(Str::random(6)), $email);
+            $userWithDuplicatedEmail->save();
+        }
     }
 }
