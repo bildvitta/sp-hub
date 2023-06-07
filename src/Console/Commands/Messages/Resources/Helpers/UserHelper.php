@@ -22,6 +22,11 @@ trait UserHelper
         $user->name = $message->name;
         $user->email = $message->email;
         $user->avatar = $message->avatar;
+
+        $user->created_at = $message->created_at;
+        $user->updated_at = $message->updated_at;
+        $user->deleted_at = $message->deleted_at;
+
         if (isset($message->is_superuser)) {
             $user->company_id = $this->getCompanyId($message->company_uuid);
             $user->is_superuser = $message->is_superuser;
