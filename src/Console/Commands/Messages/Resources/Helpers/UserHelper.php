@@ -40,6 +40,10 @@ trait UserHelper
             $appSlug = config('app.slug');
             $this->updatePermissions($user, $message->user_permissions->$appSlug);
         }
+
+        if ($cacheUser = config('sp-hub.cache.users')) {
+            (new $cacheUser())->forget($user);
+        }
     }
 
     private function updatePermissions($user, $userPermissions)
