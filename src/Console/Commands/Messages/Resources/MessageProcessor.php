@@ -4,6 +4,7 @@ namespace BildVitta\SpHub\Console\Commands\Messages\Resources;
 
 use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\CompanyHelper;
 use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\LogHelper;
+use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\PermissionHelper;
 use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\UserHelper;
 use PhpAmqpLib\Message\AMQPMessage;
 use stdClass;
@@ -14,6 +15,7 @@ class MessageProcessor
     use LogHelper;
     use UserHelper;
     use CompanyHelper;
+    use PermissionHelper;
 
     /**
      * @var string
@@ -24,6 +26,11 @@ class MessageProcessor
      * @var string
      */
     public const COMPANIES = 'companies';
+
+    /**
+     * @var string
+     */
+    public const PERMISSIONS = 'permissions';
 
     /**
      * @var string
@@ -39,6 +46,11 @@ class MessageProcessor
      * @var string
      */
     public const DELETED = 'deleted';
+
+    /**
+     * @var string
+     */
+    public const SUPERVISOR_BROKERS_UPDATED = 'supervisor_brokers_updated';
 
     /**
      * @param AMQPMessage $message
@@ -63,6 +75,9 @@ class MessageProcessor
                     break;
                 case self::COMPANIES:
                     $this->companies($messageData, $operation);
+                    break;
+                case self::PERMISSIONS:
+                    $this->permissions($messageData, $operation);
                     break;
             }
         } catch (Throwable $exception) {
@@ -105,6 +120,20 @@ class MessageProcessor
                 break;
             case self::DELETED:
                 $this->companyDelete($message);
+                break;
+        }
+    }
+
+    /**
+     * @param stdClass $message
+     * @param string $operation
+     * @return void
+     */
+    private function permissions(stdClass $message, string $operation): void
+    {
+        switch ($operation) {
+            case self::SUPERVISOR_BROKERS_UPDATED:
+                $this->permissionSupervisorBrokersUpdated($message);
                 break;
         }
     }
