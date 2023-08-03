@@ -7,6 +7,7 @@ use Cache;
 use Hash;
 use Spatie\Permission\Models\Permission;
 use stdClass;
+use BildVitta\SpHub\Events\Users\UserUpdated;
 
 trait UserHelper
 {
@@ -41,8 +42,8 @@ trait UserHelper
             $this->updatePermissions($user, $message->user_permissions->$appSlug);
         }
 
-        if ($cacheUser = config('sp-hub.cache.users')) {
-            (new $cacheUser())->forget($user);
+        if (config('sp-hub.events.user_updated')) {
+            event(new UserUpdated($user->hub_uuid));
         }
     }
 

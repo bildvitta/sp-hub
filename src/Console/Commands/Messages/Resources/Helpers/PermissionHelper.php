@@ -3,7 +3,7 @@
 namespace BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers;
 
 use stdClass;
-use BildVitta\SpHub\Models\Worker;
+use BildVitta\SpHub\Events\Permissions\SupervisorBrokerUpdated;
 
 trait PermissionHelper
 {
@@ -13,18 +13,8 @@ trait PermissionHelper
      */
     private function permissionSupervisorBrokersUpdated(stdClass $message): void
     {
-        if ($updateSupervisorJob = config('sp-hub.crm.update_supervisor')) {
-            foreach ($message->user_uuids as $userUuid) {
-                $worker = new Worker();
-                $worker->status = 'created';
-                $worker->type = 'customers_update_supervisor';
-                $worker->payload = [
-                    'user_hub_uuid' => $userUuid,
-                ];
-                $worker->save();
-        
-                $updateSupervisorJob::dispatch($worker->id);
-            }
+        if (config('sp-hub.events.permissions_supervisor_brokers_updated')) {
+            event(new SupervisorBrokerUpdated($message));
         }
     }
 }
