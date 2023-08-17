@@ -18,7 +18,7 @@ class HubImportCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'dataimport:hub {--select=500} {--offset=0} {--tables=companies,users}';
+    protected $signature = 'dataimport:hub {--select=500} {--offset=0} {--tables=companies,users,positions,user_companies,user_company_parent_positions,user_company_real_estate_developments}';
 
     /**
      * The console command description.
@@ -35,7 +35,7 @@ class HubImportCommand extends Command
     public function handle()
     {
         $this->info('Starting import');
-       
+
         $selectLimit = 500;
         if ($optionSelect = $this->option('select')) {
             $selectLimit = (int) $optionSelect;
@@ -45,7 +45,7 @@ class HubImportCommand extends Command
         if ($optionOffset = $this->option('offset')) {
             $offset = (int) $optionOffset;
         }
-        
+
         $tableIndex = 0;
         $tables = explode(',', $this->option('tables'));
 
@@ -66,7 +66,7 @@ class HubImportCommand extends Command
 
         $this->info('Worker type: ' . self::WORKER_TYPE);
         $this->info('Job started, command execution ended');
- 
+
         return 0;
     }
 }

@@ -11,7 +11,15 @@ use BildVitta\SpHub\Models\Worker;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\CompanyImport;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\ConfigConnection;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubCompany;
+use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubPositions;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubUser;
+use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubUserCompanies;
+use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubUserCompanyParentPosition;
+use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubUserCompanyRealEstateDevelopment;
+use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\PositionImport;
+use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\UserCompanyImport;
+use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\UserCompanyParentPositionImport;
+use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\UserCompanyRealEstateDevelopmentsImport;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\UserImport;
 use InvalidArgumentException;
 use Throwable;
@@ -75,7 +83,7 @@ class HubImportJob implements ShouldQueue
      */
     public function handle()
     {
-        if (! $this->worker = Worker::find($this->workerId)) {
+        if (!$this->worker = Worker::find($this->workerId)) {
             return;
         }
         $this->init();
@@ -86,6 +94,18 @@ class HubImportJob implements ShouldQueue
                 break;
             case 'users':
                 $this->importUsers();
+                break;
+            case 'positions':
+                $this->importPositions();
+                break;
+            case 'user_companies':
+                $this->importUserCompanies();
+                break;
+            case 'user_company_parent_positions':
+                $this->importUserCompanyParentPositions();
+                break;
+            case 'user_company_real_estate_developments':
+                $this->importUserCompanyRealEstateDevelopments();
                 break;
             default:
                 throw new InvalidArgumentException('Invalid current table');
@@ -100,6 +120,94 @@ class HubImportJob implements ShouldQueue
         $this->configConnection();
         $this->updateWorker(['status' => 'in_progress']);
         $this->currentTable = $this->worker->payload->tables[$this->worker->payload->table_index];
+    }
+
+    /**
+     * @return void
+     */
+    private function importUserCompanies(): void
+    {
+        $dbHubUserCompanies = app(DbHubUserCompanies::class);
+        $userCompanyImport = app(UserCompanyImport::class);
+        $payload = $this->worker->payload;
+
+        if (is_null($payload->total)) {
+            $payload->total = $dbHubUserCompanies->totalRecords();
+            $this->updateWorker(['payload' => $payload]);
+        }
+
+        $companies = collect($dbHubUserCompanies->getUserCompanies($payload->limit, $payload->offset));
+        foreach ($companies as $company) {
+            $userCompanyImport->import($company);
+        }
+
+        $this->dispatchNextJob();
+    }
+
+    /**
+     * @return void
+     */
+    private function importUserCompanyParentPositions(): void
+    {
+        $dbHubUserCompanyParentPosition = app(DbHubUserCompanyParentPosition::class);
+        $userCompanyParentPositionImport = app(UserCompanyParentPositionImport::class);
+        $payload = $this->worker->payload;
+
+        if (is_null($payload->total)) {
+            $payload->total = $dbHubUserCompanyParentPosition->totalRecords();
+            $this->updateWorker(['payload' => $payload]);
+        }
+
+        $companies = collect($dbHubUserCompanyParentPosition->getUserCompaniesParentPositions($payload->limit, $payload->offset));
+        foreach ($companies as $company) {
+            $userCompanyParentPositionImport->import($company);
+        }
+
+        $this->dispatchNextJob();
+    }
+
+    /**
+     * @return void
+     */
+    private function importUserCompanyRealEstateDevelopments(): void
+    {
+        $dbHubUserCompanyParentPosition = app(DbHubUserCompanyRealEstateDevelopment::class);
+        $userCompanyParentPositionImport = app(UserCompanyRealEstateDevelopmentsImport::class);
+        $payload = $this->worker->payload;
+
+        if (is_null($payload->total)) {
+            $payload->total = $dbHubUserCompanyParentPosition->totalRecords();
+            $this->updateWorker(['payload' => $payload]);
+        }
+
+        $companies = collect($dbHubUserCompanyParentPosition->getUserCompaniesRealEstateDevelopments($payload->limit, $payload->offset));
+        foreach ($companies as $company) {
+            $userCompanyParentPositionImport->import($company);
+        }
+
+        $this->dispatchNextJob();
+    }
+
+    /**
+     * @return void
+     */
+    private function importPositions(): void
+    {
+        $dbHubPositions = app(DbHubPositions::class);
+        $positionImport = app(PositionImport::class);
+        $payload = $this->worker->payload;
+
+        if (is_null($payload->total)) {
+            $payload->total = $dbHubPositions->totalRecords();
+            $this->updateWorker(['payload' => $payload]);
+        }
+
+        $companies = collect($dbHubPositions->getPositions($payload->limit, $payload->offset));
+        foreach ($companies as $company) {
+            $positionImport->import($company);
+        }
+
+        $this->dispatchNextJob();
     }
 
     /**
@@ -120,7 +228,7 @@ class HubImportJob implements ShouldQueue
         foreach ($companies as $company) {
             $companyImport->import($company);
         }
-        
+
         $this->dispatchNextJob();
     }
 
@@ -151,12 +259,12 @@ class HubImportJob implements ShouldQueue
      */
     private function dispatchNextJob(): void
     {
-        if (! $this->worker = Worker::find($this->workerId)) {
+        if (!$this->worker = Worker::find($this->workerId)) {
             return;
         }
         $payload = $this->worker->payload;
         $nextOffset = $payload->offset + $payload->limit;
-        
+
         if ($nextOffset < $payload->total) {
             $payload->offset = $nextOffset;
             $this->updateWorker(['payload' => $payload]);
@@ -198,7 +306,7 @@ class HubImportJob implements ShouldQueue
      */
     public function failed(Throwable $exception): void
     {
-        if (! $worker = Worker::find($this->workerId)) {
+        if (!$worker = Worker::find($this->workerId)) {
             return;
         }
         $worker->error = [
