@@ -14,7 +14,7 @@ class UserCompanyRealEstateDevelopmentsImport
      */
     public function import(stdClass $userCompany): void
     {
-        $userCompanyClass = config('hub.model_user_company_real_estate_developments');
+        $userCompanyClass = config('hub.model_user_company_real_estate_development');
         $userCompanyModel = $userCompanyClass::where('user_company_id', $this->getUserCompanyId($userCompany->user_company_uuid))
             ->first();
         if (!$userCompanyModel) {
@@ -50,7 +50,7 @@ class UserCompanyRealEstateDevelopmentsImport
      */
     private function checkExistingUserCompany(stdClass $userCompany): void
     {
-        $companyLinkClass = config('hub.model_user_company_real_estate_developments');
+        $companyLinkClass = config('hub.model_user_company_real_estate_development');
         $companyLinkWithDuplicatedEmail = $companyLinkClass::where('user_company_id', $userCompany->user_company_uuid)
             ->first();
         if ($companyLinkWithDuplicatedEmail) {
