@@ -2,6 +2,7 @@
 
 namespace BildVitta\SpHub;
 
+use BildVitta\SpHub\Console\Commands\ConfigureRabbitMQ;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\HubImportCommand;
 use BildVitta\SpHub\Console\Commands\Messages\HubMessageWorkerCommand;
 use BildVitta\SpHub\Console\Commands\InstallSp;
@@ -19,6 +20,7 @@ class SpHubServiceProvider extends PackageServiceProvider
                 HubMessageWorkerCommand::class,
                 InstallSp::class,
                 HubImportCommand::class,
+                ConfigureRabbitMQ::class,
             ])
             ->hasMigrations([
                 'add_column_main_company_id_on_hub_companies',
