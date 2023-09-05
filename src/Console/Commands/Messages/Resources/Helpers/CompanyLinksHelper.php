@@ -2,6 +2,7 @@
 
 namespace BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers;
 
+use Spatie\Permission\Models\Permission;
 use stdClass;
 
 trait CompanyLinksHelper
@@ -33,8 +34,11 @@ trait CompanyLinksHelper
 
         $userCompanyModel->save();
 
+        $appSlug = config('app.slug');
+
         $this->createOrUpdateUserCompanyParents($userCompanyModel, $message->user_company_parents);
         $this->createOrUpdateRealEstateDevelopments($userCompanyModel, $message->real_estate_developments);
+        $this->createOrUpdatePermissions($userCompanyModel, $message->permissions->$appSlug);
     }
 
     /**
@@ -83,6 +87,40 @@ trait CompanyLinksHelper
             }
         }
         return null;
+    }
+
+    private function createOrUpdatePermissions($userCompanyModel, $permissions)
+    {
+        $userCompanyPermissions = $permissions;
+
+        if ($userCompanyModel->getAllPermissions()->count() !== collect($userCompanyPermissions)->flatten()->count()) {
+            $this->clearPermissionsCache();
+        }
+
+        $permissionsArray = $userCompanyPermissions;
+
+        $localPermissions = Permission::toBase()->whereIn('name', $permissionsArray)
+            ->orderBy('name')->get('name')->pluck('name')->toArray();
+
+        $permissionsDiff = array_diff($permissionsArray, $localPermissions);
+        $permissionsInsert = [];
+
+        foreach ($permissionsDiff as $permission) {
+            $permissionsInsert[] = ['name' => $permission, 'guard_name' => config('auth.defaults.guard')];
+        }
+
+        if (!empty($permissionsInsert)) {
+            Permission::insert($permissionsInsert);
+        }
+
+        $userLocalPermissions = $userCompanyModel->permissions->pluck('name')->toArray();
+        $userCompanyPermissionsDiff = array_diff($permissionsArray, $userLocalPermissions);
+        $userLocalPermissionsDiff = array_diff($userLocalPermissions, $permissionsArray);
+
+        if (!empty($userCompanyPermissionsDiff) || !empty($userLocalPermissionsDiff)) {
+            $userCompanyModel->syncPermissions(...collect($permissionsArray)->toArray());
+            $userCompanyModel->refresh();
+        }
     }
 
     private function createOrUpdateRealEstateDevelopments($userCompanyModel, $real_estate_developments)
