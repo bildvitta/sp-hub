@@ -142,7 +142,7 @@ trait CompanyLinksHelper
 
             $companyLinkClass = config('hub.model_user_company');
             $companyParentUuid = $companyLinkClass::withTrashed()
-                ->where('uuid', '!=', $user_company_parents->user_company_parent_uuid)
+                ->where('uuid', '=', $user_company_parents->user_company_parent_uuid)
                 ->first();
 
             $userCompanyModel->user_company_children()->create([
