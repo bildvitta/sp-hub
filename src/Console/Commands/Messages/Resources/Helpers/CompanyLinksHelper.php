@@ -47,8 +47,7 @@ trait CompanyLinksHelper
      */
     private function userCompaniesDelete(stdClass $message): void
     {
-        $userCompanyClass = config('hub.model_user_company');
-        $userCompanyClass::where('uuid', $message->uuid)->delete();
+        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
     }
 
     /**
