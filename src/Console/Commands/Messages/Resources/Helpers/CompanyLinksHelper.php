@@ -47,6 +47,12 @@ trait CompanyLinksHelper
      */
     private function userCompaniesDelete(stdClass $message): void
     {
+        $userCompanyClass = config('hub.model_user_company');
+        $userCompanyClass::where('uuid', $message->uuid)->delete();
+    }
+
+    private function clearUserPermissionsCache()
+    {
         app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
     }
 
@@ -93,7 +99,7 @@ trait CompanyLinksHelper
         $userCompanyPermissions = $permissions;
 
         if ($userCompanyModel->getAllPermissions()->count() !== collect($userCompanyPermissions)->flatten()->count()) {
-            $this->clearPermissionsCache();
+            $this->clearUserPermissionsCache();
         }
 
         $permissionsArray = $userCompanyPermissions;
