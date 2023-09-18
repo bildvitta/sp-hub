@@ -126,7 +126,7 @@ class HubMessageWorkerCommand extends Command
         $user = config('sp-hub.rabbitmq.user');
         $password = config('sp-hub.rabbitmq.password');
         $virtualhost = config('sp-hub.rabbitmq.virtualhost');
-        $heartbeat = 20;
+        $heartbeat = 0;
         $sslOptions = [
             'verify_peer' => false
         ];
