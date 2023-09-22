@@ -5,6 +5,7 @@ namespace BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources;
 use stdClass;
 use Illuminate\Support\Str;
 use Log;
+use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubUserCompanies;
 
 class UserCompanyImport
 {
@@ -34,6 +35,15 @@ class UserCompanyImport
         $this->checkExistingUserCompany($userCompany->uuid);
 
         $userCompanyModel->save();
+
+        $dbHubUserCompanies = app(DbHubUserCompanies::class);
+
+        $permissions = collect($dbHubUserCompanies->getPermissionsByUserCompanyId($userCompany->id));
+        
+        $permissionsModel = collect($dbHubUserCompanies->getPermissionsModelHasRolesByUserCompanyId($userCompany->id));
+        
+        $userCompanyModel->syncPermissions($permissions->merge($permissionsModel));
+
     }
 
     /**

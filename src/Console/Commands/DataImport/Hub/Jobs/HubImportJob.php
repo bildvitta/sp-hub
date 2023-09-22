@@ -21,6 +21,8 @@ use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\UserCompanyImport;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\UserCompanyParentPositionImport;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\UserCompanyRealEstateDevelopmentsImport;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\UserImport;
+use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubPermission;
+use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\PermissionImport;
 use InvalidArgumentException;
 use Throwable;
 
@@ -98,6 +100,9 @@ class HubImportJob implements ShouldQueue
             case 'positions':
                 $this->importPositions();
                 break;
+            case 'permissions':
+                $this->importPermissions();
+                break;
             case 'user_companies':
                 $this->importUserCompanies();
                 break;
@@ -106,7 +111,7 @@ class HubImportJob implements ShouldQueue
                 break;
             case 'user_company_real_estate_developments':
                 $this->importUserCompanyRealEstateDevelopments();
-                break;
+                break;            
             default:
                 throw new InvalidArgumentException('Invalid current table');
         }
@@ -120,6 +125,28 @@ class HubImportJob implements ShouldQueue
         $this->configConnection();
         $this->updateWorker(['status' => 'in_progress']);
         $this->currentTable = $this->worker->payload->tables[$this->worker->payload->table_index];
+    }
+
+    /**
+     * @return void
+     */
+    private function importPermissions(): void
+    {
+        $dbHubPermission = app(DbHubPermission::class);
+        $permissionImport = app(PermissionImport::class);
+        $payload = $this->worker->payload;
+
+        if (is_null($payload->total)) {
+            $payload->total = $dbHubPermission->totalRecords();
+            $this->updateWorker(['payload' => $payload]);
+        }
+
+        $permissions = collect($dbHubPermission->getPermissions($payload->limit, $payload->offset));
+        foreach ($permissions as $permission) {
+            $permissionImport->import($permission);
+        }
+
+        $this->dispatchNextJob();
     }
 
     /**
@@ -252,7 +279,7 @@ class HubImportJob implements ShouldQueue
         }
 
         $this->dispatchNextJob();
-    }
+    }   
 
     /**
      * @return void

@@ -100,4 +100,36 @@ class DbHubUserCompanies
             'offset' => $offset,
         ]);
     }
+
+    /**
+     * @param int $userCompanyId
+     * @return array
+     */
+    public function getPermissionsByUserCompanyId($userCompanyId): array
+    {
+        $query = "SELECT p.name
+            FROM model_has_permissions mhp
+            INNER JOIN permissions p ON mhp.permission_id = p.id
+            WHERE mhp.model_type = 'App\\Models\\UserCompany'
+            AND mhp.model_id = {$userCompanyId}";
+
+        return DB::connection('sp_hub')->select($query);
+    }
+
+    /**
+     * @param int $userCompanyId
+     * @return array
+     */
+    public function getPermissionsModelHasRolesByUserCompanyId($userCompanyId): array
+    {
+        $query = "SELECT p.name
+            FROM model_has_roles mhr
+            INNER JOIN role_has_permissions rhp on rhp.role_id = mhr.role_id
+            INNER JOIN permissions p ON rhp.permission_id = p.id
+            WHERE mhr.model_type = 'App\\Models\\UserCompany'
+            AND mhr.model_id = {$userCompanyId}";
+
+        return DB::connection('sp_hub')->select($query);
+    }
+
 }
