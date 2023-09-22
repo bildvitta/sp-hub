@@ -107,10 +107,13 @@ class DbHubUserCompanies
      */
     public function getPermissionsByUserCompanyId($userCompanyId): array
     {
+        $slug = config('app.slug');
         $query = "SELECT p.name
             FROM model_has_permissions mhp
             INNER JOIN permissions p ON mhp.permission_id = p.id
-            WHERE mhp.model_type = 'App\\Models\\UserCompany'
+            LEFT JOIN permissions_project pp on pp.id = p.project_id
+            WHERE pp.slug = '{$slug}'
+            AND mhp.model_type = 'App\\\Models\\\UserCompany'
             AND mhp.model_id = {$userCompanyId}";
 
         return DB::connection('sp_hub')->select($query);
@@ -122,11 +125,14 @@ class DbHubUserCompanies
      */
     public function getPermissionsModelHasRolesByUserCompanyId($userCompanyId): array
     {
+        $slug = config('app.slug');
         $query = "SELECT p.name
             FROM model_has_roles mhr
             INNER JOIN role_has_permissions rhp on rhp.role_id = mhr.role_id
             INNER JOIN permissions p ON rhp.permission_id = p.id
-            WHERE mhr.model_type = 'App\\Models\\UserCompany'
+            LEFT JOIN permissions_project pp on pp.id = p.project_id
+            WHERE pp.slug = '{$slug}'
+            AND mhr.model_type = 'App\\\Models\\\UserCompany'
             AND mhr.model_id = {$userCompanyId}";
 
         return DB::connection('sp_hub')->select($query);

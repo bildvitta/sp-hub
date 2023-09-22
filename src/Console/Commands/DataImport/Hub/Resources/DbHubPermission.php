@@ -11,7 +11,11 @@ class DbHubPermission
      */
     public function totalRecords(): int
     {
-        $query = "SELECT count(1) as total FROM permissions";
+        $slug = config('app.slug');
+        $query = "SELECT count(p.id) as total
+            FROM permissions p
+            INNER JOIN permissions_project pp on pp.id = p.project_id
+            WHERE pp.slug = '{$slug}'";
         $result = DB::connection('sp_hub')->select($query);
 
         return (int) $result[0]->total;
@@ -36,6 +40,5 @@ class DbHubPermission
             'limit' => $limit,
             'offset' => $offset,
         ]);
-    }    
-
+    }
 }

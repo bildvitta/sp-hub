@@ -37,13 +37,12 @@ class UserCompanyImport
         $userCompanyModel->save();
 
         $dbHubUserCompanies = app(DbHubUserCompanies::class);
-
         $permissions = collect($dbHubUserCompanies->getPermissionsByUserCompanyId($userCompany->id));
-        
         $permissionsModel = collect($dbHubUserCompanies->getPermissionsModelHasRolesByUserCompanyId($userCompany->id));
-        
-        $userCompanyModel->syncPermissions($permissions->merge($permissionsModel));
 
+        $allPermissions = $permissions->merge($permissionsModel)->pluck('name')->toArray();
+
+        $userCompanyModel->syncPermissions($allPermissions);
     }
 
     /**

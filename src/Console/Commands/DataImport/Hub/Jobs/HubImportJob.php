@@ -111,7 +111,7 @@ class HubImportJob implements ShouldQueue
                 break;
             case 'user_company_real_estate_developments':
                 $this->importUserCompanyRealEstateDevelopments();
-                break;            
+                break;
             default:
                 throw new InvalidArgumentException('Invalid current table');
         }
@@ -279,7 +279,7 @@ class HubImportJob implements ShouldQueue
         }
 
         $this->dispatchNextJob();
-    }   
+    }
 
     /**
      * @return void

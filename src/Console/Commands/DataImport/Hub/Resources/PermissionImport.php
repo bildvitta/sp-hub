@@ -22,7 +22,7 @@ class PermissionImport
             $permissionModel->guard_name = 'web';
 
             $permissionModel->save();
-        }       
+        }
 
     }
 
