@@ -2,6 +2,7 @@
 
 namespace BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers;
 
+use BildVitta\SpHub\Events\Users\UserCompanyUpdated;
 use Spatie\Permission\Models\Permission;
 use stdClass;
 
@@ -39,6 +40,10 @@ trait CompanyLinksHelper
         $this->createOrUpdateUserCompanyParents($userCompanyModel, $message->user_company_parents);
         $this->createOrUpdateRealEstateDevelopments($userCompanyModel, $message->real_estate_developments);
         $this->createOrUpdatePermissions($userCompanyModel, $message->permissions->$appSlug);
+
+        if (config('sp-hub.events.user_company_updated')) {
+            event(new UserCompanyUpdated($userCompanyModel->uuid));
+        }
     }
 
     /**
