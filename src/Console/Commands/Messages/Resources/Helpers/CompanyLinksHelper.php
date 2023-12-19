@@ -54,6 +54,10 @@ trait CompanyLinksHelper
     {
         $userCompanyClass = config('hub.model_user_company');
         $userCompanyClass::where('uuid', $message->uuid)->delete();
+
+        if (config('sp-hub.events.user_company_updated')) {
+            event(new UserCompanyUpdated($message->uuid));
+        }
     }
 
     private function clearUserPermissionsCache()
