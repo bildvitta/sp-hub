@@ -27,6 +27,7 @@ class DbHubUserCompanyRealEstateDevelopment
         $query = "SELECT user_company.uuid as user_company_uuid, ucred.*
             FROM user_company_real_estate_developments ucred
             INNER JOIN user_companies user_company on user_company.id = ucred.linkable_id
+            WHERE ucred.linkable_type = 'App\\Models\\UserCompany'
             ORDER BY user_company_uuid
             LIMIT :limit
             OFFSET :offset";
