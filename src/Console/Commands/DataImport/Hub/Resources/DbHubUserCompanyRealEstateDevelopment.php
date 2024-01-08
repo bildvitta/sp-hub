@@ -26,7 +26,7 @@ class DbHubUserCompanyRealEstateDevelopment
     {
         $query = "SELECT user_company.uuid as user_company_uuid, ucred.*
             FROM user_company_real_estate_developments ucred
-            INNER JOIN user_companies user_company on user_company.id = ucred.user_company_id
+            INNER JOIN user_companies user_company on user_company.id = ucred.linkable_id
             ORDER BY user_company_uuid
             LIMIT :limit
             OFFSET :offset";
