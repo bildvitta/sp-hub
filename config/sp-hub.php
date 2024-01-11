@@ -22,4 +22,8 @@ return [
         'password' => env('HUB_DB_PASSWORD', ''),
     ],
     'model_user' => '\App\Models\User',
+    'events' => [
+        'user_updated' => true,
+        'permissions_supervisor_brokers_updated' => true
+    ],
 ];

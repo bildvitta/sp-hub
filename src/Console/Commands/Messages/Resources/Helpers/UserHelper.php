@@ -80,8 +80,7 @@ trait UserHelper
 
     private function clearPermissionsCache()
     {
-        $permissionCacheKey = config('permission.cache.key');
-        Cache::forget($permissionCacheKey);
+        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
     }
 
     private function userPermissionsToArray($userPermissions): array

@@ -79,6 +79,13 @@ class HubMessageWorkerCommand extends Command
         
         $queueName = config('sp-hub.rabbitmq.queue.hub');
         $callback = [$this->messageProcessor, 'process'];
+
+        $qos = config('sp-hub.rabbitmq.qos', false);
+        if ($qos) {
+            $qos = (int) $qos;
+            $this->channel->basic_qos(null, $qos, null);
+        }
+
         $this->channel->basic_consume(
             queue: $queueName,
             callback: $callback
@@ -126,7 +133,7 @@ class HubMessageWorkerCommand extends Command
         $user = config('sp-hub.rabbitmq.user');
         $password = config('sp-hub.rabbitmq.password');
         $virtualhost = config('sp-hub.rabbitmq.virtualhost');
-        $heartbeat = 0;
+        $heartbeat = (int) config('sp-hub.rabbitmq.heartbeat', 60);
         $sslOptions = [
             'verify_peer' => false
         ];
