@@ -35,6 +35,10 @@ trait UserHelper
         $user->is_superuser = $message->is_superuser;
         $user->is_active = $message->is_active;
 
+        if (in_array('document', $user->getFillable())) {
+            $user->document = $message->document;
+        }
+
         $user->save();
 
         if (config('app.slug')) {
