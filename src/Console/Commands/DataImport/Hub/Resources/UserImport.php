@@ -31,6 +31,10 @@ class UserImport
         $userModel->is_superuser = $user->is_superuser;
         $userModel->company_id = $this->getCompanyId($user->hub_company_uuid);
 
+        if (in_array('document', $userModel->getFillable())) {
+            $userModel->document = $user->document;
+        }
+
         $this->checkExistingEmail($user->email, $user->uuid);
 
         $userModel->save();

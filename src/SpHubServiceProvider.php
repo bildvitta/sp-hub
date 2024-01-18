@@ -26,6 +26,7 @@ class SpHubServiceProvider extends PackageServiceProvider
                 'add_column_main_company_id_on_hub_companies',
                 'add_deleted_at_column_on_users_table',
                 'create_workers_table',
+                'add_document_column_to_users_table',
             ])
             ->runsMigrations();
     }
