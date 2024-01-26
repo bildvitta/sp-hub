@@ -30,6 +30,19 @@ trait CompanyHelper
         } else {
             $company->main_company_id = $message->main_company_id ?? null;
         }
+
+        $userModel = app(config('hub.model_user'));
+        if ($this->userHasExtraFields($userModel->getFillable())) {
+            $company->document = $message->document;
+            $company->company_name = $message->company_name;
+            $company->address = $message->address;
+            $company->street_number = $message->street_number;
+            $company->complement = $message->complement;
+            $company->city = $message->city;
+            $company->state = $message->state;
+            $company->postal_code = $message->postal_code;
+        }
+
         $company->save();
     }
 
