@@ -11,6 +11,8 @@ use BildVitta\SpHub\Events\Users\UserUpdated;
 
 trait UserHelper
 {
+    use UserExtraFields;
+
     /**
      * @param stdClass $message
      * @return void
@@ -35,8 +37,15 @@ trait UserHelper
         $user->is_superuser = $message->is_superuser;
         $user->is_active = $message->is_active;
 
-        if (in_array('document', $user->getFillable())) {
+        if ($this->userHasExtraFields($user->getFillable())) {
             $user->document = $message->document;
+            $user->company_name = $message->company_name;
+            $user->address = $message->address;
+            $user->street_number = $message->street_number;
+            $user->complement = $message->complement;
+            $user->city = $message->city;
+            $user->state = $message->state;
+            $user->postal_code = $message->postal_code;
         }
 
         $user->save();

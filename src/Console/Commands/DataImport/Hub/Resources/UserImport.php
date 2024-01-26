@@ -2,12 +2,15 @@
 
 namespace BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources;
 
+use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\UserExtraFields;
 use BildVitta\SpHub\Models\HubCompany;
 use stdClass;
 use Illuminate\Support\Str;
 
 class UserImport
 {
+    use UserExtraFields;
+
     /**
      * @param stdClass $user
      * @return void
@@ -31,8 +34,15 @@ class UserImport
         $userModel->is_superuser = $user->is_superuser;
         $userModel->company_id = $this->getCompanyId($user->hub_company_uuid);
 
-        if (in_array('document', $userModel->getFillable())) {
+        if ($this->userHasExtraFields($userModel->getFillable())) {
             $userModel->document = $user->document;
+            $userModel->company_name = $user->company_name;
+            $userModel->address = $user->address;
+            $userModel->street_number = $user->street_number;
+            $userModel->complement = $user->complement;
+            $userModel->city = $user->city;
+            $userModel->state = $user->state;
+            $userModel->postal_code = $user->postal_code;
         }
 
         $this->checkExistingEmail($user->email, $user->uuid);

@@ -48,3 +48,18 @@ return [
 ```
 
 With the configuration file sp-hub.php published in your configuration folder it is necessary to create environment variables in your .env file:
+
+## Enable extra columns sync
+
+Add these attributes to the user model's `$fillable` property.
+
+```
+'document', 
+'company_name', 
+'address', 
+'street_number', 
+'complement',
+'city',
+'state',
+'postal_code',
+```
