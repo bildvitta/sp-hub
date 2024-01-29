@@ -55,7 +55,6 @@ Add these attributes to the user model's `$fillable` property.
 
 ```
 'document', 
-'company_name', 
 'address', 
 'street_number', 
 'complement',

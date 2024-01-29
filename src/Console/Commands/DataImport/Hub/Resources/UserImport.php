@@ -36,7 +36,6 @@ class UserImport
 
         if ($this->userHasExtraFields($userModel->getFillable())) {
             $userModel->document = $user->document;
-            $userModel->company_name = $user->company_name;
             $userModel->address = $user->address;
             $userModel->street_number = $user->street_number;
             $userModel->complement = $user->complement;
