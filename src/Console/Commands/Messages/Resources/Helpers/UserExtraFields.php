@@ -12,7 +12,6 @@ trait UserExtraFields
     {
         $extraFields = [
             'document', 
-            'company_name', 
             'address', 
             'street_number', 
             'complement',

@@ -39,7 +39,6 @@ trait UserHelper
 
         if ($this->userHasExtraFields($user->getFillable())) {
             $user->document = $message->document;
-            $user->company_name = $message->company_name;
             $user->address = $message->address;
             $user->street_number = $message->street_number;
             $user->complement = $message->complement;
