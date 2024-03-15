@@ -2,37 +2,37 @@
 
 namespace BildVitta\SpHub\Console\Commands\DataImport\Hub\Jobs;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Bus\Queueable;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use BildVitta\SpHub\Models\Worker;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\CompanyImport;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\ConfigConnection;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubCompany;
+use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubPermission;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubPositions;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubUser;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubUserCompanies;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubUserCompanyParentPosition;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubUserCompanyRealEstateDevelopment;
+use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\PermissionImport;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\PositionImport;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\UserCompanyImport;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\UserCompanyParentPositionImport;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\UserCompanyRealEstateDevelopmentsImport;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\UserImport;
-use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubPermission;
-use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\PermissionImport;
+use BildVitta\SpHub\Models\Worker;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use InvalidArgumentException;
 use Throwable;
 
 class HubImportJob implements ShouldQueue
 {
+    use ConfigConnection;
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
-    use ConfigConnection;
 
     /**
      * The number of times the job may be attempted.
@@ -53,14 +53,8 @@ class HubImportJob implements ShouldQueue
      */
     public $retryAfter = 60;
 
-    /**
-     * @var int
-     */
     private int $workerId;
 
-    /**
-     * @var string
-     */
     private string $currentTable;
 
     /**
@@ -68,9 +62,6 @@ class HubImportJob implements ShouldQueue
      */
     private $worker;
 
-    /**
-     * @param int $workerId
-     */
     public function __construct(int $workerId)
     {
         $this->onQueue('default');
@@ -81,11 +72,12 @@ class HubImportJob implements ShouldQueue
      * Execute the job.
      *
      * @return void
+     *
      * @throws InvalidArgumentException
      */
     public function handle()
     {
-        if (!$this->worker = Worker::find($this->workerId)) {
+        if (! $this->worker = Worker::find($this->workerId)) {
             return;
         }
         $this->init();
@@ -117,9 +109,6 @@ class HubImportJob implements ShouldQueue
         }
     }
 
-    /**
-     * @return void
-     */
     private function init(): void
     {
         $this->configConnection();
@@ -127,9 +116,6 @@ class HubImportJob implements ShouldQueue
         $this->currentTable = $this->worker->payload->tables[$this->worker->payload->table_index];
     }
 
-    /**
-     * @return void
-     */
     private function importPermissions(): void
     {
         $dbHubPermission = app(DbHubPermission::class);
@@ -149,9 +135,6 @@ class HubImportJob implements ShouldQueue
         $this->dispatchNextJob();
     }
 
-    /**
-     * @return void
-     */
     private function importUserCompanies(): void
     {
         $dbHubUserCompanies = app(DbHubUserCompanies::class);
@@ -171,9 +154,6 @@ class HubImportJob implements ShouldQueue
         $this->dispatchNextJob();
     }
 
-    /**
-     * @return void
-     */
     private function importUserCompanyParentPositions(): void
     {
         $dbHubUserCompanyParentPosition = app(DbHubUserCompanyParentPosition::class);
@@ -193,9 +173,6 @@ class HubImportJob implements ShouldQueue
         $this->dispatchNextJob();
     }
 
-    /**
-     * @return void
-     */
     private function importUserCompanyRealEstateDevelopments(): void
     {
         $dbHubUserCompanyParentPosition = app(DbHubUserCompanyRealEstateDevelopment::class);
@@ -215,9 +192,6 @@ class HubImportJob implements ShouldQueue
         $this->dispatchNextJob();
     }
 
-    /**
-     * @return void
-     */
     private function importPositions(): void
     {
         $dbHubPositions = app(DbHubPositions::class);
@@ -237,9 +211,6 @@ class HubImportJob implements ShouldQueue
         $this->dispatchNextJob();
     }
 
-    /**
-     * @return void
-     */
     private function importCompanies(): void
     {
         $dbHubCompany = app(DbHubCompany::class);
@@ -259,9 +230,6 @@ class HubImportJob implements ShouldQueue
         $this->dispatchNextJob();
     }
 
-    /**
-     * @return void
-     */
     private function importUsers(): void
     {
         $dbHubUser = app(DbHubUser::class);
@@ -281,12 +249,9 @@ class HubImportJob implements ShouldQueue
         $this->dispatchNextJob();
     }
 
-    /**
-     * @return void
-     */
     private function dispatchNextJob(): void
     {
-        if (!$this->worker = Worker::find($this->workerId)) {
+        if (! $this->worker = Worker::find($this->workerId)) {
             return;
         }
         $payload = $this->worker->payload;
@@ -314,10 +279,6 @@ class HubImportJob implements ShouldQueue
         }
     }
 
-    /**
-     * @param array $props
-     * @return void
-     */
     private function updateWorker(array $props): void
     {
         foreach ($props as $key => $value) {
@@ -327,13 +288,9 @@ class HubImportJob implements ShouldQueue
         $this->worker->save();
     }
 
-    /**
-     * @param Throwable $exception
-     * @return void
-     */
     public function failed(Throwable $exception): void
     {
-        if (!$worker = Worker::find($this->workerId)) {
+        if (! $worker = Worker::find($this->workerId)) {
             return;
         }
         $worker->error = [

@@ -10,9 +10,6 @@ class UserCompanyUpdated
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /**
-     * @param string $userCompanyUuid
-     */
     public function __construct(public string $userCompanyUuid)
     {
     }

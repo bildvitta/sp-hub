@@ -3,21 +3,18 @@
 namespace BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources;
 
 use stdClass;
-use Illuminate\Support\Str;
-use Log;
 
 class UserCompanyRealEstateDevelopmentsImport
 {
     /**
-     * @param stdClass $user
-     * @return void
+     * @param  stdClass  $user
      */
     public function import(stdClass $userCompany): void
     {
         $userCompanyClass = config('hub.model_user_company_real_estate_development');
         $userCompanyModel = $userCompanyClass::where('user_company_id', $this->getUserCompanyId($userCompany->user_company_uuid))
             ->first();
-        if (!$userCompanyModel) {
+        if (! $userCompanyModel) {
             $userCompanyModel = new $userCompanyClass();
         }
 
@@ -41,12 +38,12 @@ class UserCompanyRealEstateDevelopmentsImport
                 return $hubUserCompany->id;
             }
         }
+
         return null;
     }
 
     /**
-     * @param string $hubUuid
-     * @return void
+     * @param  string  $hubUuid
      */
     private function checkExistingUserCompany(stdClass $userCompany): void
     {

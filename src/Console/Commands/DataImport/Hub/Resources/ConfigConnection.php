@@ -4,9 +4,6 @@ namespace BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources;
 
 trait ConfigConnection
 {
-    /**
-     * @return void
-     */
     private function configConnection(): void
     {
         config([
@@ -25,7 +22,7 @@ trait ConfigConnection
                 'strict' => true,
                 'engine' => null,
                 'options' => [],
-            ]
+            ],
         ]);
     }
 }

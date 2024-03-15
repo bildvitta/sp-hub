@@ -64,7 +64,7 @@ class HubImportCommand extends Command
 
         HubImportJob::dispatch($worker->id);
 
-        $this->info('Worker type: ' . self::WORKER_TYPE);
+        $this->info('Worker type: '.self::WORKER_TYPE);
         $this->info('Job started, command execution ended');
 
         return 0;

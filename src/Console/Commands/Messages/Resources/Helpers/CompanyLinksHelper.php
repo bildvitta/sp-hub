@@ -8,17 +8,13 @@ use stdClass;
 
 trait CompanyLinksHelper
 {
-    /**
-     * @param stdClass $message
-     * @return void
-     */
     private function userCompaniesCreateOrUpdate(stdClass $message): void
     {
         $userCompanyClass = config('hub.model_user_company');
         $userCompanyModel = $userCompanyClass::withTrashed()
             ->where('uuid', $message->uuid)
             ->first();
-        if (!$userCompanyModel) {
+        if (! $userCompanyModel) {
             $userCompanyModel = new $userCompanyClass();
         }
 
@@ -46,10 +42,6 @@ trait CompanyLinksHelper
         }
     }
 
-    /**
-     * @param stdClass $message
-     * @return void
-     */
     private function userCompaniesDelete(stdClass $message): void
     {
         $userCompanyClass = config('hub.model_user_company');
@@ -66,8 +58,7 @@ trait CompanyLinksHelper
     }
 
     /**
-     * @param string|null $hubPositionUuid
-     * @return int|null
+     * @param  string|null  $hubPositionUuid
      */
     private function getUserId(?string $hubUserUuid): ?int
     {
@@ -81,12 +72,12 @@ trait CompanyLinksHelper
                 return $hubPosition->id;
             }
         }
+
         return null;
     }
 
     /**
-     * @param string|null $hubPositionUuid
-     * @return int|null
+     * @param  string|null  $hubPositionUuid
      */
     private function getPositionId(?string $hubParentPositionUuid): ?int
     {
@@ -100,6 +91,7 @@ trait CompanyLinksHelper
                 return $hubPosition->id;
             }
         }
+
         return null;
     }
 
@@ -123,7 +115,7 @@ trait CompanyLinksHelper
             $permissionsInsert[] = ['name' => $permission, 'guard_name' => config('auth.defaults.guard')];
         }
 
-        if (!empty($permissionsInsert)) {
+        if (! empty($permissionsInsert)) {
             Permission::insert($permissionsInsert);
         }
 
@@ -131,7 +123,7 @@ trait CompanyLinksHelper
         $userCompanyPermissionsDiff = array_diff($permissionsArray, $userLocalPermissions);
         $userLocalPermissionsDiff = array_diff($userLocalPermissions, $permissionsArray);
 
-        if (!empty($userCompanyPermissionsDiff) || !empty($userLocalPermissionsDiff)) {
+        if (! empty($userCompanyPermissionsDiff) || ! empty($userLocalPermissionsDiff)) {
             $userCompanyModel->syncPermissions(...collect($permissionsArray)->toArray());
             $userCompanyModel->refresh();
         }
@@ -165,10 +157,6 @@ trait CompanyLinksHelper
         }
     }
 
-    /**
-     * @param string $hubUuid
-     * @return void
-     */
     private function checkExistingUserCompany(string $hubUuid): void
     {
         $companyLinkClass = config('hub.model_user_company');

@@ -3,15 +3,11 @@
 namespace BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources;
 
 use stdClass;
-use Illuminate\Support\Str;
-use Log;
-use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubUserCompanies;
 
 class UserCompanyImport
 {
     /**
-     * @param stdClass $user
-     * @return void
+     * @param  stdClass  $user
      */
     public function import(stdClass $userCompany): void
     {
@@ -19,7 +15,7 @@ class UserCompanyImport
         $userCompanyModel = $userCompanyClass::withTrashed()
             ->where('uuid', $userCompany->uuid)
             ->first();
-        if (!$userCompanyModel) {
+        if (! $userCompanyModel) {
             $userCompanyModel = new $userCompanyClass();
         }
 
@@ -46,8 +42,7 @@ class UserCompanyImport
     }
 
     /**
-     * @param string|null $hubPositionUuid
-     * @return int|null
+     * @param  string|null  $hubPositionUuid
      */
     private function getUserId(?string $hubUserUuid): ?int
     {
@@ -61,12 +56,12 @@ class UserCompanyImport
                 return $hubPosition->id;
             }
         }
+
         return null;
     }
 
     /**
-     * @param string|null $hubPositionUuid
-     * @return int|null
+     * @param  string|null  $hubPositionUuid
      */
     private function getPositionId(?string $hubParentPositionUuid): ?int
     {
@@ -80,13 +75,10 @@ class UserCompanyImport
                 return $hubPosition->id;
             }
         }
+
         return null;
     }
 
-    /**
-     * @param string|null $hubCompanyUuid
-     * @return int|null
-     */
     private function getCompanyId(?string $hubCompanyUuid): ?int
     {
         if ($hubCompanyUuid) {
@@ -98,13 +90,10 @@ class UserCompanyImport
                 return $hubCompany->id;
             }
         }
+
         return null;
     }
 
-    /**
-     * @param string $hubUuid
-     * @return void
-     */
     private function checkExistingUserCompany(string $hubUuid): void
     {
         $companyLinkClass = config('hub.model_user_company');

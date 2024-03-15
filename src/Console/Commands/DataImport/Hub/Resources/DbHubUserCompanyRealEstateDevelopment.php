@@ -6,22 +6,14 @@ use Illuminate\Support\Facades\DB;
 
 class DbHubUserCompanyRealEstateDevelopment
 {
-    /**
-     * @return int
-     */
     public function totalRecords(): int
     {
-        $query = "SELECT count(1) as total FROM user_company_real_estate_developments";
+        $query = 'SELECT count(1) as total FROM user_company_real_estate_developments';
         $result = DB::connection('sp_hub')->select($query);
 
         return (int) $result[0]->total;
     }
 
-    /**
-     * @param int $limit
-     * @param int $offset
-     * @return array
-     */
     public function getUserCompaniesRealEstateDevelopments(int $limit, int $offset): array
     {
         $query = "SELECT user_company.uuid as user_company_uuid, ucred.*
