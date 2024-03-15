@@ -1,0 +1,28 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        if (Schema::hasTable('hub_companies')) {
+            if (!Schema::hasColumn('hub_companies', 'public_list')) {
+                Schema::table('hub_companies', function (Blueprint $table) {
+                    $table->boolean('public_list')->default(true);
+                });
+            }
+        }
+    }
+
+    public function down()
+    {
+        if (Schema::hasTable('hub_companies')) {
+            if (Schema::hasColumn('hub_companies', 'public_list')) {
+                Schema::dropColumns('hub_companies', ['public_list']);
+            }
+        }
+    }
+};

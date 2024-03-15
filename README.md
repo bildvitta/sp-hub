@@ -19,6 +19,12 @@ For everything to work perfectly in addition to having the settings file publish
 php artisan sp:install
 ```
 
+To configure the queues in RabbitMQ just run this command that it automatically creates based on the settings you passed in `config/sp-hub.php`
+
+```bash
+php artisan sp-hub:configure
+```
+
 ## Configuration
 
 This is the contents of the published config file:
@@ -42,3 +48,17 @@ return [
 ```
 
 With the configuration file sp-hub.php published in your configuration folder it is necessary to create environment variables in your .env file:
+
+## Enable extra columns sync
+
+Add these attributes to the user model's `$fillable` property.
+
+```
+'document', 
+'address', 
+'street_number', 
+'complement',
+'city',
+'state',
+'postal_code',
+```

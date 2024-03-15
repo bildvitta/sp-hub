@@ -15,7 +15,7 @@ class InstallSp extends Command
      */
     private const VENDOR_PUBLISH_CONFIG_PARAMS = [
         '--provider' => SpHubServiceProvider::class,
-        '--tag' => 'sp-hub-config'
+        '--tag' => 'sp-hub-config',
     ];
 
     /**
@@ -24,7 +24,7 @@ class InstallSp extends Command
      * @const array
      */
     private const VENDOR_PUBLISH_MIGRATION_PARAMS = [
-        '--provider' => SpHubServiceProvider::class
+        '--provider' => SpHubServiceProvider::class,
     ];
 
     /**
@@ -75,11 +75,6 @@ class InstallSp extends Command
         $this->info('Installed SPPackage');
     }
 
-    /**
-     * @param  string  $fileName
-     *
-     * @return bool
-     */
     private function configExists(string $fileName): bool
     {
         return File::exists(config_path($fileName));
@@ -87,8 +82,6 @@ class InstallSp extends Command
 
     /**
      * @param  bool|false  $forcePublish
-     *
-     * @return void
      */
     private function publishConfiguration($forcePublish = false): void
     {
@@ -103,8 +96,6 @@ class InstallSp extends Command
 
     /**
      * Should overwrite config file.
-     *
-     * @return bool
      */
     private function shouldOverwriteConfig(): bool
     {
@@ -116,9 +107,6 @@ class InstallSp extends Command
         return $this->confirm('Run migrations of SP package? If you have already done this step, do not do it again!');
     }
 
-    /**
-     * @return void
-     */
     private function publishMigration(): void
     {
         $this->call('vendor:publish', self::VENDOR_PUBLISH_MIGRATION_PARAMS);

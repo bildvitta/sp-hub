@@ -8,9 +8,7 @@ use Throwable;
 trait LogHelper
 {
     /**
-     * @param Throwable $exception
-     * @param mixed $message
-     * @return void
+     * @param  mixed  $message
      */
     private function logError(Throwable $exception, $message): void
     {
@@ -18,7 +16,7 @@ trait LogHelper
             $worker = new Worker();
             $worker->type = 'rabbitmq.worker.error';
             $worker->payload = [
-                'message' => $message
+                'message' => $message,
             ];
             $worker->status = Worker::STATUS_ERROR;
             $worker->error = [

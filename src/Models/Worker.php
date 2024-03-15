@@ -40,9 +40,6 @@ class Worker extends Model
      */
     protected const KEY_UUID = 'uuid';
 
-    /**
-     * @var string
-     */
     protected static string $keyUuid = self::KEY_UUID;
 
     /**
@@ -68,13 +65,11 @@ class Worker extends Model
         'payload' => 'object',
         'error' => 'object',
         'attempts' => 'int',
-        'schedule' => 'datetime'
+        'schedule' => 'datetime',
     ];
 
     /**
      * Bootstrap the model and its traits.
-     *
-     * @return void
      */
     public static function boot(): void
     {

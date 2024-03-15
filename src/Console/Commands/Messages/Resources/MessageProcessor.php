@@ -3,8 +3,10 @@
 namespace BildVitta\SpHub\Console\Commands\Messages\Resources;
 
 use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\CompanyHelper;
+use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\CompanyLinksHelper;
 use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\LogHelper;
 use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\PermissionHelper;
+use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\PositionsHelper;
 use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\UserHelper;
 use PhpAmqpLib\Message\AMQPMessage;
 use stdClass;
@@ -12,10 +14,12 @@ use Throwable;
 
 class MessageProcessor
 {
-    use LogHelper;
-    use UserHelper;
     use CompanyHelper;
+    use CompanyLinksHelper;
+    use LogHelper;
     use PermissionHelper;
+    use PositionsHelper;
+    use UserHelper;
 
     /**
      * @var string
@@ -31,6 +35,16 @@ class MessageProcessor
      * @var string
      */
     public const PERMISSIONS = 'permissions';
+
+    /**
+     * @var string
+     */
+    public const POSITIONS = 'positions';
+
+    /**
+     * @var string
+     */
+    public const USER_COMPANIES = 'user_companies';
 
     /**
      * @var string
@@ -52,10 +66,6 @@ class MessageProcessor
      */
     public const SUPERVISOR_BROKERS_UPDATED = 'supervisor_brokers_updated';
 
-    /**
-     * @param AMQPMessage $message
-     * @return void
-     */
     public function process(AMQPMessage $message): void
     {
         $message->ack();
@@ -79,6 +89,12 @@ class MessageProcessor
                 case self::PERMISSIONS:
                     $this->permissions($messageData, $operation);
                     break;
+                case self::POSITIONS:
+                    $this->positions($messageData, $operation);
+                    break;
+                case self::USER_COMPANIES:
+                    $this->userCompanies($messageData, $operation);
+                    break;
             }
         } catch (Throwable $exception) {
             $this->logError($exception, $messageBody);
@@ -88,11 +104,6 @@ class MessageProcessor
         }
     }
 
-    /**
-     * @param stdClass $message
-     * @param string $operation
-     * @return void
-     */
     private function users(stdClass $message, string $operation): void
     {
         switch ($operation) {
@@ -106,11 +117,36 @@ class MessageProcessor
         }
     }
 
-    /**
-     * @param stdClass $message
-     * @param string $operation
-     * @return void
-     */
+    private function positions(stdClass $message, string $operation): void
+    {
+        switch ($operation) {
+            case self::CREATED:
+                $this->positionCreateOrUpdate($message);
+                break;
+            case self::UPDATED:
+                $this->positionCreateOrUpdate($message);
+                break;
+            case self::DELETED:
+                $this->positionDelete($message);
+                break;
+        }
+    }
+
+    private function userCompanies(stdClass $message, string $operation): void
+    {
+        switch ($operation) {
+            case self::CREATED:
+                $this->userCompaniesCreateOrUpdate($message);
+                break;
+            case self::UPDATED:
+                $this->userCompaniesCreateOrUpdate($message);
+                break;
+            case self::DELETED:
+                $this->userCompaniesDelete($message);
+                break;
+        }
+    }
+
     private function companies(stdClass $message, string $operation): void
     {
         switch ($operation) {
@@ -124,11 +160,6 @@ class MessageProcessor
         }
     }
 
-    /**
-     * @param stdClass $message
-     * @param string $operation
-     * @return void
-     */
     private function permissions(stdClass $message, string $operation): void
     {
         switch ($operation) {

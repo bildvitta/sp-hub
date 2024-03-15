@@ -1,0 +1,38 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        $userModel = app(config('hub.model_user'));
+
+        Schema::table($userModel->getTable(), function (Blueprint $table) {
+            $table->string('address')->nullable()->after('email_verified_at');
+            $table->string('street_number')->nullable()->after('address');
+            $table->string('complement')->nullable()->after('street_number');
+            $table->string('city')->nullable()->after('complement');
+            $table->string('state')->nullable()->after('city');
+            $table->string('postal_code')->nullable()->after('state');
+        });
+    }
+
+    public function down()
+    {
+        $userModel = app(config('hub.model_user'));
+
+        Schema::table($userModel->getTable(), function (Blueprint $table) {
+            $table->dropColumn([
+                'address', 
+                'street_number', 
+                'complement', 
+                'city',
+                'state',
+                'postal_code',
+            ]);
+        });
+    }
+};

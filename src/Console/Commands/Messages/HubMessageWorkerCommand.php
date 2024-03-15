@@ -3,12 +3,12 @@
 namespace BildVitta\SpHub\Console\Commands\Messages;
 
 use BildVitta\SpHub\Console\Commands\Messages\Resources\MessageProcessor;
+use Exception;
 use Illuminate\Console\Command;
+use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPSSLConnection;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exception\AMQPExceptionInterface;
-use PhpAmqpLib\Channel\AMQPChannel;
-use Exception;
 
 class HubMessageWorkerCommand extends Command
 {
@@ -36,14 +36,8 @@ class HubMessageWorkerCommand extends Command
      */
     private $channel;
 
-    /**
-     * @var MessageProcessor
-     */
     private MessageProcessor $messageProcessor;
 
-    /**
-     * @param MessageProcessor $messageProcessor
-     */
     public function __construct(MessageProcessor $messageProcessor)
     {
         parent::__construct();
@@ -66,33 +60,35 @@ class HubMessageWorkerCommand extends Command
                 sleep(5);
             }
         }
+
         return 0;
     }
 
-    /**
-     * @return void
-     */
     private function process(): void
     {
         $this->connect();
         $this->channel = $this->connection->channel();
-        
+
         $queueName = config('sp-hub.rabbitmq.queue.hub');
         $callback = [$this->messageProcessor, 'process'];
+
+        $qos = config('sp-hub.rabbitmq.qos', false);
+        if ($qos) {
+            $qos = (int) $qos;
+            $this->channel->basic_qos(null, $qos, null);
+        }
+
         $this->channel->basic_consume(
             queue: $queueName,
             callback: $callback
         );
 
         $this->channel->consume();
-        
+
         $this->closeChannel();
         $this->closeConnection();
     }
 
-    /**
-     * @return void
-     */
     private function closeChannel(): void
     {
         try {
@@ -103,9 +99,6 @@ class HubMessageWorkerCommand extends Command
         }
     }
 
-    /**
-     * @return void
-     */
     private function closeConnection(): void
     {
         try {
@@ -116,9 +109,6 @@ class HubMessageWorkerCommand extends Command
         }
     }
 
-    /**
-     * @return void
-     */
     private function connect(): void
     {
         $host = config('sp-hub.rabbitmq.host');
@@ -126,14 +116,14 @@ class HubMessageWorkerCommand extends Command
         $user = config('sp-hub.rabbitmq.user');
         $password = config('sp-hub.rabbitmq.password');
         $virtualhost = config('sp-hub.rabbitmq.virtualhost');
-        $heartbeat = 20;
+        $heartbeat = (int) config('sp-hub.rabbitmq.heartbeat', 60);
         $sslOptions = [
-            'verify_peer' => false
+            'verify_peer' => false,
         ];
         $options = [
-            'heartbeat' => $heartbeat
+            'heartbeat' => $heartbeat,
         ];
-        
+
         if (app()->isLocal()) {
             $this->connection = new AMQPStreamConnection(
                 host: $host,

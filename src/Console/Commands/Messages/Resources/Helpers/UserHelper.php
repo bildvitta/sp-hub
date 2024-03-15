@@ -2,22 +2,20 @@
 
 namespace BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers;
 
+use BildVitta\SpHub\Events\Users\UserUpdated;
 use BildVitta\SpHub\Models\HubCompany;
-use Cache;
 use Hash;
 use Spatie\Permission\Models\Permission;
 use stdClass;
 
 trait UserHelper
 {
-    /**
-     * @param stdClass $message
-     * @return void
-     */
+    use UserExtraFields;
+
     private function userCreateOrUpdate(stdClass $message): void
     {
         $modelUser = config('sp-hub.model_user');
-        if (!$user = $modelUser::withTrashed()->where('hub_uuid', $message->uuid)->first()) {
+        if (! $user = $modelUser::withTrashed()->where('hub_uuid', $message->uuid)->first()) {
             $user = new $modelUser();
             $user->hub_uuid = $message->uuid;
             $user->password = Hash::make('password');
@@ -34,6 +32,16 @@ trait UserHelper
         $user->is_superuser = $message->is_superuser;
         $user->is_active = $message->is_active;
 
+        if ($this->userHasExtraFields($user->getFillable())) {
+            $user->document = $message->document;
+            $user->address = $message->address;
+            $user->street_number = $message->street_number;
+            $user->complement = $message->complement;
+            $user->city = $message->city;
+            $user->state = $message->state;
+            $user->postal_code = $message->postal_code;
+        }
+
         $user->save();
 
         if (config('app.slug')) {
@@ -41,8 +49,8 @@ trait UserHelper
             $this->updatePermissions($user, $message->user_permissions->$appSlug);
         }
 
-        if ($cacheUser = config('sp-hub.cache.users')) {
-            (new $cacheUser())->forget($user);
+        if (config('sp-hub.events.user_updated')) {
+            event(new UserUpdated($user->hub_uuid));
         }
     }
 
@@ -63,7 +71,7 @@ trait UserHelper
             $permissionsInsert[] = ['name' => $permission, 'guard_name' => 'web'];
         }
 
-        if (!empty($permissionsInsert)) {
+        if (! empty($permissionsInsert)) {
             Permission::insert($permissionsInsert);
         }
 
@@ -71,7 +79,7 @@ trait UserHelper
         $userPermissionsDiff = array_diff($permissionsArray, $userLocalPermissions);
         $userLocalPermissionsDiff = array_diff($userLocalPermissions, $permissionsArray);
 
-        if (!empty($userPermissionsDiff) || !empty($userLocalPermissionsDiff)) {
+        if (! empty($userPermissionsDiff) || ! empty($userLocalPermissionsDiff)) {
             $user->syncPermissions(...collect($permissionsArray)->toArray());
             $user->refresh();
         }
@@ -79,39 +87,32 @@ trait UserHelper
 
     private function clearPermissionsCache()
     {
-        $permissionCacheKey = config('permission.cache.key');
-        Cache::forget($permissionCacheKey);
+        app()->make(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
     }
 
     private function userPermissionsToArray($userPermissions): array
     {
         $permissionsArray = [];
         foreach ($userPermissions as $key => $value) {
-            if (!is_array($value)) {
+            if (! is_array($value)) {
                 $permissionsArray[] = "$key.$value";
+
                 continue;
             }
             foreach ($value as $array) {
                 $permissionsArray[] = "$key.$array";
             }
         }
+
         return $permissionsArray;
     }
 
-    /**
-     * @param stdClass $message
-     * @return void
-     */
     private function userDelete(stdClass $message): void
     {
         $modelUser = config('sp-hub.model_user');
         $modelUser::where('hub_uuid', $message->uuid)->delete();
     }
 
-    /**
-     * @param string|null $hubCompanyUuid
-     * @return int|null
-     */
     private function getCompanyId(?string $hubCompanyUuid): ?int
     {
         if ($hubCompanyUuid) {
@@ -122,6 +123,7 @@ trait UserHelper
                 return $hubCompany->id;
             }
         }
+
         return null;
     }
 }
