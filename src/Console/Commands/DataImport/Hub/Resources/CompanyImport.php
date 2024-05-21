@@ -33,7 +33,6 @@ class CompanyImport
             $companyModel->city = $company->city;
             $companyModel->state = $company->state;
             $companyModel->postal_code = $company->postal_code;
-            $companyModel->public_list = $company->public_list;
         }
 
         $companyModel->save();

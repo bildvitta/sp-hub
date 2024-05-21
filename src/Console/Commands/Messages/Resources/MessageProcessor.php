@@ -7,6 +7,7 @@ use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\CompanyLinksHelp
 use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\LogHelper;
 use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\PermissionHelper;
 use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\PositionsHelper;
+use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\RoleHelper;
 use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\UserHelper;
 use PhpAmqpLib\Message\AMQPMessage;
 use stdClass;
@@ -19,6 +20,7 @@ class MessageProcessor
     use LogHelper;
     use PermissionHelper;
     use PositionsHelper;
+    use RoleHelper;
     use UserHelper;
 
     /**
@@ -35,6 +37,11 @@ class MessageProcessor
      * @var string
      */
     public const PERMISSIONS = 'permissions';
+
+    /**
+     * @var string
+     */
+    public const ROLES = 'roles';
 
     /**
      * @var string
@@ -88,6 +95,9 @@ class MessageProcessor
                     break;
                 case self::PERMISSIONS:
                     $this->permissions($messageData, $operation);
+                    break;
+                case self::ROLES:
+                    $this->roles($messageData, $operation);
                     break;
                 case self::POSITIONS:
                     $this->positions($messageData, $operation);
@@ -165,6 +175,21 @@ class MessageProcessor
         switch ($operation) {
             case self::SUPERVISOR_BROKERS_UPDATED:
                 $this->permissionSupervisorBrokersUpdated($message);
+                break;
+        }
+    }
+
+    private function roles(stdClass $message, string $operation): void
+    {
+        switch ($operation) {
+            case self::CREATED:
+                $this->roleCreateOrUpdate($message);
+                break;
+            case self::UPDATED:
+                $this->roleCreateOrUpdate($message);
+                break;
+            case self::DELETED:
+                $this->roleDelete($message);
                 break;
         }
     }

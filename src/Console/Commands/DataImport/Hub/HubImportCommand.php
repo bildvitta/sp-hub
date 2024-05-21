@@ -18,7 +18,7 @@ class HubImportCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'dataimport:hub {--select=500} {--offset=0} {--tables=companies,users,positions,permissions,user_companies,user_company_parent_positions,user_company_real_estate_developments}';
+    protected $signature = 'dataimport:hub {--select=500} {--offset=0} {--tables=companies,users,positions,permissions,roles,user_companies,user_company_parent_positions,user_company_real_estate_developments}';
 
     /**
      * The console command description.

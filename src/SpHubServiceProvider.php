@@ -29,7 +29,6 @@ class SpHubServiceProvider extends PackageServiceProvider
                 'add_document_column_to_users_table',
                 'add_address_columns_to_users_table',
                 'add_address_and_company_name_columns_to_companies_table',
-                'add_public_list_on_hub_companies_table',
             ])
             ->runsMigrations();
     }
