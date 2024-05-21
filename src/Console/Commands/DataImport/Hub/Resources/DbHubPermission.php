@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\DB;
 
 class DbHubPermission
 {
-    /**
-     * @return int
-     */
     public function totalRecords(): int
     {
         $slug = config('app.slug');
@@ -21,11 +18,6 @@ class DbHubPermission
         return (int) $result[0]->total;
     }
 
-    /**
-     * @param int $limit
-     * @param int $offset
-     * @return array
-     */
     public function getPermissions(int $limit, int $offset): array
     {
         $slug = config('app.slug');

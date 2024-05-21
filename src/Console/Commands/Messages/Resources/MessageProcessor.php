@@ -14,12 +14,12 @@ use Throwable;
 
 class MessageProcessor
 {
-    use LogHelper;
-    use UserHelper;
     use CompanyHelper;
+    use CompanyLinksHelper;
+    use LogHelper;
     use PermissionHelper;
     use PositionsHelper;
-    use CompanyLinksHelper;
+    use UserHelper;
 
     /**
      * @var string
@@ -66,10 +66,6 @@ class MessageProcessor
      */
     public const SUPERVISOR_BROKERS_UPDATED = 'supervisor_brokers_updated';
 
-    /**
-     * @param AMQPMessage $message
-     * @return void
-     */
     public function process(AMQPMessage $message): void
     {
         $message->ack();
@@ -108,11 +104,6 @@ class MessageProcessor
         }
     }
 
-    /**
-     * @param stdClass $message
-     * @param string $operation
-     * @return void
-     */
     private function users(stdClass $message, string $operation): void
     {
         switch ($operation) {
@@ -126,11 +117,6 @@ class MessageProcessor
         }
     }
 
-    /**
-     * @param stdClass $message
-     * @param string $operation
-     * @return void
-     */
     private function positions(stdClass $message, string $operation): void
     {
         switch ($operation) {
@@ -146,11 +132,6 @@ class MessageProcessor
         }
     }
 
-    /**
-     * @param stdClass $message
-     * @param string $operation
-     * @return void
-     */
     private function userCompanies(stdClass $message, string $operation): void
     {
         switch ($operation) {
@@ -166,11 +147,6 @@ class MessageProcessor
         }
     }
 
-    /**
-     * @param stdClass $message
-     * @param string $operation
-     * @return void
-     */
     private function companies(stdClass $message, string $operation): void
     {
         switch ($operation) {
@@ -184,11 +160,6 @@ class MessageProcessor
         }
     }
 
-    /**
-     * @param stdClass $message
-     * @param string $operation
-     * @return void
-     */
     private function permissions(stdClass $message, string $operation): void
     {
         switch ($operation) {

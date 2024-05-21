@@ -4,10 +4,6 @@ namespace BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers;
 
 trait UserExtraFields
 {
-    /**
-     * @param array $fillable
-     * @return bool
-     */
     protected function userHasExtraFields(array $fillable): bool
     {
         $extraFields = [
@@ -19,8 +15,8 @@ trait UserExtraFields
             'state',
             'postal_code',
         ];
-        foreach($extraFields as $extraField) {
-            if (!in_array($extraField, $fillable)) {
+        foreach ($extraFields as $extraField) {
+            if (! in_array($extraField, $fillable)) {
                 return false;
             }
         }

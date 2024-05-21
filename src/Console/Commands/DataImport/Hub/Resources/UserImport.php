@@ -4,17 +4,13 @@ namespace BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources;
 
 use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\UserExtraFields;
 use BildVitta\SpHub\Models\HubCompany;
-use stdClass;
 use Illuminate\Support\Str;
+use stdClass;
 
 class UserImport
 {
     use UserExtraFields;
 
-    /**
-     * @param stdClass $user
-     * @return void
-     */
     public function import(stdClass $user): void
     {
         $userClass = config('sp-hub.model_user');
@@ -49,10 +45,6 @@ class UserImport
         $userModel->save();
     }
 
-    /**
-     * @param string|null $hubCompanyUuid
-     * @return int|null
-     */
     private function getCompanyId(?string $hubCompanyUuid): ?int
     {
         if ($hubCompanyUuid) {
@@ -63,14 +55,10 @@ class UserImport
                 return $hubCompany->id;
             }
         }
+
         return null;
     }
 
-    /**
-     * @param string $email
-     * @param string $hubUuid
-     * @return void
-     */
     private function checkExistingEmail(string $email, string $hubUuid): void
     {
         $userClass = config('sp-hub.model_user');

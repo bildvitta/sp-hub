@@ -4,8 +4,8 @@ namespace BildVitta\SpHub;
 
 use BildVitta\SpHub\Console\Commands\ConfigureRabbitMQ;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\HubImportCommand;
-use BildVitta\SpHub\Console\Commands\Messages\HubMessageWorkerCommand;
 use BildVitta\SpHub\Console\Commands\InstallSp;
+use BildVitta\SpHub\Console\Commands\Messages\HubMessageWorkerCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 

@@ -28,8 +28,9 @@ class ConfigureRabbitMQ extends Command
      */
     public function handle()
     {
-        if (!config('rabbitmq.active', false)) {
+        if (! config('rabbitmq.active', false)) {
             $this->info('RabbitMQ não está ativado! Ignorando configuração inicial...');
+
             return 0;
         }
 

@@ -3,20 +3,16 @@
 namespace BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources;
 
 use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\UserExtraFields;
-use stdClass;
 use BildVitta\SpHub\Models\HubCompany;
+use stdClass;
 
 class CompanyImport
 {
     use UserExtraFields;
 
-    /**
-     * @param stdClass $company
-     * @return void
-     */
     public function import(stdClass $company): void
     {
-        if (!$companyModel = HubCompany::withTrashed()->where('uuid', $company->uuid)->first()) {
+        if (! $companyModel = HubCompany::withTrashed()->where('uuid', $company->uuid)->first()) {
             $companyModel = new HubCompany();
             $companyModel->uuid = $company->uuid;
         }
