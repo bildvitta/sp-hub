@@ -11,9 +11,9 @@ trait UserExtraFields
     protected function userHasExtraFields(array $fillable): bool
     {
         $extraFields = [
-            'document', 
-            'address', 
-            'street_number', 
+            'document',
+            'address',
+            'street_number',
             'complement',
             'city',
             'state',
