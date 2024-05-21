@@ -11,8 +11,7 @@
         "ramsey/uuid": "^4.2.2"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.9",
-        "laravel/pint": "^1.14",
+        "laravel/pint": "^1.16",
         "phpunit/phpunit": "^9.5"
     },
     "autoload": {
