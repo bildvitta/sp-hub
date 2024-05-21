@@ -37,6 +37,7 @@ trait CompanyHelper
             $company->city = $message->city;
             $company->state = $message->state;
             $company->postal_code = $message->postal_code;
+            $company->public_list = $message->public_list;
         }
 
         $company->save();
