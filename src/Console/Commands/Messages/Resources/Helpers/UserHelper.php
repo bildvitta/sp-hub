@@ -2,25 +2,20 @@
 
 namespace BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers;
 
+use BildVitta\SpHub\Events\Users\UserUpdated;
 use BildVitta\SpHub\Models\HubCompany;
-use Cache;
 use Hash;
 use Spatie\Permission\Models\Permission;
 use stdClass;
-use BildVitta\SpHub\Events\Users\UserUpdated;
 
 trait UserHelper
 {
     use UserExtraFields;
 
-    /**
-     * @param stdClass $message
-     * @return void
-     */
     private function userCreateOrUpdate(stdClass $message): void
     {
         $modelUser = config('sp-hub.model_user');
-        if (!$user = $modelUser::withTrashed()->where('hub_uuid', $message->uuid)->first()) {
+        if (! $user = $modelUser::withTrashed()->where('hub_uuid', $message->uuid)->first()) {
             $user = new $modelUser();
             $user->hub_uuid = $message->uuid;
             $user->password = Hash::make('password');
@@ -76,7 +71,7 @@ trait UserHelper
             $permissionsInsert[] = ['name' => $permission, 'guard_name' => 'web'];
         }
 
-        if (!empty($permissionsInsert)) {
+        if (! empty($permissionsInsert)) {
             Permission::insert($permissionsInsert);
         }
 
@@ -84,7 +79,7 @@ trait UserHelper
         $userPermissionsDiff = array_diff($permissionsArray, $userLocalPermissions);
         $userLocalPermissionsDiff = array_diff($userLocalPermissions, $permissionsArray);
 
-        if (!empty($userPermissionsDiff) || !empty($userLocalPermissionsDiff)) {
+        if (! empty($userPermissionsDiff) || ! empty($userLocalPermissionsDiff)) {
             $user->syncPermissions(...collect($permissionsArray)->toArray());
             $user->refresh();
         }
@@ -99,31 +94,25 @@ trait UserHelper
     {
         $permissionsArray = [];
         foreach ($userPermissions as $key => $value) {
-            if (!is_array($value)) {
+            if (! is_array($value)) {
                 $permissionsArray[] = "$key.$value";
+
                 continue;
             }
             foreach ($value as $array) {
                 $permissionsArray[] = "$key.$array";
             }
         }
+
         return $permissionsArray;
     }
 
-    /**
-     * @param stdClass $message
-     * @return void
-     */
     private function userDelete(stdClass $message): void
     {
         $modelUser = config('sp-hub.model_user');
         $modelUser::where('hub_uuid', $message->uuid)->delete();
     }
 
-    /**
-     * @param string|null $hubCompanyUuid
-     * @return int|null
-     */
     private function getCompanyId(?string $hubCompanyUuid): ?int
     {
         if ($hubCompanyUuid) {
@@ -134,6 +123,7 @@ trait UserHelper
                 return $hubCompany->id;
             }
         }
+
         return null;
     }
 }

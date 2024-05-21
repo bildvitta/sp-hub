@@ -11,9 +11,6 @@ class SupervisorBrokerUpdated
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /**
-     * @param stdClass $message
-     */
     public function __construct(public stdClass $message)
     {
     }

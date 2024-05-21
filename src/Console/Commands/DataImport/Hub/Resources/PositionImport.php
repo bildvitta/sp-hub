@@ -3,14 +3,11 @@
 namespace BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources;
 
 use stdClass;
-use Illuminate\Support\Str;
-use Log;
 
 class PositionImport
 {
     /**
-     * @param stdClass $user
-     * @return void
+     * @param  stdClass  $user
      */
     public function import(stdClass $position): void
     {
@@ -18,7 +15,7 @@ class PositionImport
         $positionModel = $positionClass::withTrashed()
             ->where('uuid', $position->uuid)
             ->first();
-        if (!$positionModel) {
+        if (! $positionModel) {
             $positionModel = new $positionClass();
         }
         $positionModel->uuid = $position->uuid;
@@ -33,8 +30,7 @@ class PositionImport
     }
 
     /**
-     * @param string|null $hubPositionUuid
-     * @return int|null
+     * @param  string|null  $hubPositionUuid
      */
     private function getParentPositionId(?string $hubParentPositionUuid): ?int
     {
@@ -48,13 +44,10 @@ class PositionImport
                 return $hubPosition->id;
             }
         }
+
         return null;
     }
 
-    /**
-     * @param string|null $hubCompanyUuid
-     * @return int|null
-     */
     private function getCompanyId(?string $hubCompanyUuid): ?int
     {
         if ($hubCompanyUuid) {
@@ -66,13 +59,10 @@ class PositionImport
                 return $hubCompany->id;
             }
         }
+
         return null;
     }
 
-    /**
-     * @param string $hubUuid
-     * @return void
-     */
     private function checkExistingPosition(string $hubUuid): void
     {
         $positionClass = config('hub.model_position');

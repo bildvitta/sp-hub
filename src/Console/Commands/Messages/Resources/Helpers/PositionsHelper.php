@@ -6,10 +6,6 @@ use stdClass;
 
 trait PositionsHelper
 {
-    /**
-     * @param stdClass $message
-     * @return void
-     */
     private function positionCreateOrUpdate(stdClass $message): void
     {
         $companyClass = config('hub.model_company');
@@ -18,7 +14,7 @@ trait PositionsHelper
         $positionModel = $positionClass::withTrashed()
             ->where('uuid', $message->uuid)
             ->first();
-        if (!$positionModel) {
+        if (! $positionModel) {
             $positionModel = new $positionClass();
         }
 
@@ -30,10 +26,6 @@ trait PositionsHelper
         $positionModel->save();
     }
 
-    /**
-     * @param stdClass $message
-     * @return void
-     */
     private function positionDelete(stdClass $message): void
     {
         $positionClass = config('hub.model_position');

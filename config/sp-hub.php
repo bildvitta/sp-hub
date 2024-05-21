@@ -12,7 +12,7 @@ return [
         ],
         'queue' => [
             'hub' => env('RABBITMQ_QUEUE_HUB'),
-        ]
+        ],
     ],
     'db' => [
         'host' => env('HUB_DB_HOST', '127.0.0.1'),
@@ -24,6 +24,6 @@ return [
     'model_user' => '\App\Models\User',
     'events' => [
         'user_updated' => true,
-        'permissions_supervisor_brokers_updated' => true
+        'permissions_supervisor_brokers_updated' => true,
     ],
 ];

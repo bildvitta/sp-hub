@@ -10,9 +10,6 @@ class UserUpdated
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    /**
-     * @param string $userHubUuid
-     */
     public function __construct(public string $userHubUuid)
     {
     }

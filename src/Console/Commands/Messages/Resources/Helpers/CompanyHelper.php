@@ -7,13 +7,9 @@ use stdClass;
 
 trait CompanyHelper
 {
-    /**
-     * @param stdClass $message
-     * @return void
-     */
     private function companyCreateOrUpdate(stdClass $message): void
     {
-        if (!$company = HubCompany::withTrashed()->where('uuid', $message->uuid)->first()) {
+        if (! $company = HubCompany::withTrashed()->where('uuid', $message->uuid)->first()) {
             $company = new HubCompany();
             $company->uuid = $message->uuid;
         }
@@ -41,15 +37,12 @@ trait CompanyHelper
             $company->city = $message->city;
             $company->state = $message->state;
             $company->postal_code = $message->postal_code;
+            $company->public_list = $message->public_list;
         }
 
         $company->save();
     }
 
-    /**
-     * @param stdClass $message
-     * @return void
-     */
     private function companyDelete(stdClass $message): void
     {
         HubCompany::where('uuid', $message->uuid)->delete();
