@@ -11,14 +11,20 @@ class PermissionImport
      */
     public function import(stdClass $permission): void
     {
-        $permissionModel = app(\Spatie\Permission\Models\Permission::class);
+        $permissionModel = app(config('permission.models.permission'));
 
-        if (! $permissionModel::whereName($permission->name)->exists()) {
-            $permissionModel->name = $permission->name;
-            $permissionModel->guard_name = 'web';
+        $permissionModel = $permissionModel::where('name', $permission->name)
+            ->first();
 
-            $permissionModel->save();
+        if (! $permissionModel) {
+            $permissionModel = new $permissionModel();
         }
 
+        $permissionModel->name = $permission->name;
+        $permissionModel->guard_name = 'web';
+        $permissionModel->created_at = $permission->created_at;
+        $permissionModel->updated_at = $permission->updated_at;
+
+        $permissionModel->save();
     }
 }

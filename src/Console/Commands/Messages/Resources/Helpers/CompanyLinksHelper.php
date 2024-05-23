@@ -35,11 +35,19 @@ trait CompanyLinksHelper
 
         $this->createOrUpdateUserCompanyParents($userCompanyModel, $message->user_company_parents);
         $this->createOrUpdateRealEstateDevelopments($userCompanyModel, $message->real_estate_developments);
+        $this->createOrUpdateRoles($userCompanyModel, $message->roles);
         $this->createOrUpdatePermissions($userCompanyModel, $message->permissions->$appSlug);
 
         if (config('sp-hub.events.user_company_updated')) {
             event(new UserCompanyUpdated($userCompanyModel->uuid));
         }
+    }
+
+    private function createOrUpdateRoles($userCompanyModel, $roles)
+    {
+        $roleClass = config('permission.models.role');
+        $roles = $roleClass::whereIn('uuid', $roles)->get(['name'])->pluck('name')->toArray();
+        $userCompanyModel->syncRoles($roles);
     }
 
     private function userCompaniesDelete(stdClass $message): void
