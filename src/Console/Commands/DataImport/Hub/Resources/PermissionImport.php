@@ -11,13 +11,13 @@ class PermissionImport
      */
     public function import(stdClass $permission): void
     {
-        $permissionModel = app(config('permission.models.permission'));
+        $permissionModelFromConfig = app(config('permission.models.permission'));
 
-        $permissionModel = $permissionModel::where('name', $permission->name)
+        $permissionModel = $permissionModelFromConfig::where('name', $permission->name)
             ->first();
 
         if (! $permissionModel) {
-            $permissionModel = new $permissionModel();
+            $permissionModel = new $permissionModelFromConfig();
         }
 
         $permissionModel->name = $permission->name;
