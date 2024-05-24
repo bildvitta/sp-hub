@@ -8,13 +8,13 @@ class RoleImport
 {
     public function import(stdClass $role): void
     {
-        $roleModel = app(config('permission.models.role'));
+        $roleModelFromConfig = app(config('permission.models.role'));
 
-        $roleModel = $roleModel::where('uuid', $role->uuid)
+        $roleModel = $roleModelFromConfig::where('uuid', $role->uuid)
             ->first();
 
         if (! $roleModel) {
-            $roleModel = new $roleModel();
+            $roleModel = new $roleModelFromConfig();
         }
 
         $roleModel->uuid = $role->uuid;
