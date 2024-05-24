@@ -8,13 +8,13 @@ trait RoleHelper
 {
     private function roleCreateOrUpdate(stdClass $message): void
     {
-        $roleModel = app(config('permission.models.role'));
+        $roleModelFromConfig = app(config('permission.models.role'));
 
-        $roleModel = $roleModel::where('uuid', $message->uuid)
+        $roleModel = $roleModelFromConfig::where('uuid', $message->uuid)
             ->first();
 
         if (! $roleModel) {
-            $roleModel = new $roleModel();
+            $roleModel = new $roleModelFromConfig();
         }
 
         $roleModel->uuid = $message->uuid;
