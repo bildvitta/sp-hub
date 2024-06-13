@@ -7,12 +7,14 @@ use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\ConfigConnection;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubCompany;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubPermission;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubPositions;
+use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubRole;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubUser;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubUserCompanies;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubUserCompanyParentPosition;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubUserCompanyRealEstateDevelopment;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\PermissionImport;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\PositionImport;
+use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\RoleImport;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\UserCompanyImport;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\UserCompanyParentPositionImport;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\UserCompanyRealEstateDevelopmentsImport;
@@ -95,6 +97,9 @@ class HubImportJob implements ShouldQueue
             case 'permissions':
                 $this->importPermissions();
                 break;
+            case 'roles':
+                $this->importRoles();
+                break;
             case 'user_companies':
                 $this->importUserCompanies();
                 break;
@@ -130,6 +135,25 @@ class HubImportJob implements ShouldQueue
         $permissions = collect($dbHubPermission->getPermissions($payload->limit, $payload->offset));
         foreach ($permissions as $permission) {
             $permissionImport->import($permission);
+        }
+
+        $this->dispatchNextJob();
+    }
+
+    private function importRoles(): void
+    {
+        $dbHubRole = app(DbHubRole::class);
+        $roleImport = app(RoleImport::class);
+        $payload = $this->worker->payload;
+
+        if (is_null($payload->total)) {
+            $payload->total = $dbHubRole->totalRecords();
+            $this->updateWorker(['payload' => $payload]);
+        }
+
+        $permissions = collect($dbHubRole->getRoles($payload->limit, $payload->offset));
+        foreach ($permissions as $permission) {
+            $roleImport->import($permission);
         }
 
         $this->dispatchNextJob();

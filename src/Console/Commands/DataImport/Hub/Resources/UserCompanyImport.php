@@ -36,8 +36,10 @@ class UserCompanyImport
         $permissions = collect($dbHubUserCompanies->getPermissionsByUserCompanyId($userCompany->id));
         $permissionsModel = collect($dbHubUserCompanies->getPermissionsModelHasRolesByUserCompanyId($userCompany->id));
 
-        $allPermissions = $permissions->merge($permissionsModel)->pluck('name')->toArray();
+        $roles = collect($dbHubUserCompanies->getRolesByUserCompanyId($userCompany->id))->pluck('name')->toArray();
+        $userCompanyModel->syncRoles($roles);
 
+        $allPermissions = $permissions->merge($permissionsModel)->pluck('name')->toArray();
         $userCompanyModel->syncPermissions($allPermissions);
     }
 

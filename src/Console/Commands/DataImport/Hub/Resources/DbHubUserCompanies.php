@@ -111,4 +111,18 @@ class DbHubUserCompanies
 
         return DB::connection('sp_hub')->select($query);
     }
+
+    public function getRolesByUserCompanyId(int $userCompanyId)
+    {
+        $slug = config('app.slug');
+        $query = "SELECT r.name
+            FROM model_has_roles mhr
+            INNER JOIN roles r on r.id = mhr.role_id
+            AND mhr.model_type = 'App\\\Models\\\UserCompany'
+            AND mhr.model_id = :model_id";
+
+        return DB::connection('sp_hub')->select($query, [
+            'model_id' => $userCompanyId,
+        ]);
+    }
 }
