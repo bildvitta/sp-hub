@@ -25,6 +25,8 @@ trait CompanyLinksHelper
         $userCompanyModel->is_seller = $message->is_seller;
         $userCompanyModel->has_all_real_estate_developments = $message->has_all_real_estate_developments;
         $userCompanyModel->has_specific_permissions = $message->has_specific_permissions;
+        $userCompanyModel->created_at = $message->created_at;
+        $userCompanyModel->updated_at = $message->updated_at;
         $userCompanyModel->deleted_at = $message->deleted_at;
 
         $this->checkExistingUserCompany($message->uuid);

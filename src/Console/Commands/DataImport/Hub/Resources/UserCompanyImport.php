@@ -26,6 +26,8 @@ class UserCompanyImport
         $userCompanyModel->is_seller = $userCompany->is_seller;
         $userCompanyModel->has_all_real_estate_developments = $userCompany->has_all_real_estate_developments;
         $userCompanyModel->has_specific_permissions = $userCompany->has_specific_permissions;
+        $userCompanyModel->created_at = $userCompany->created_at;
+        $userCompanyModel->updated_at = $userCompany->updated_at;
         $userCompanyModel->deleted_at = $userCompany->deleted_at;
 
         $this->checkExistingUserCompany($userCompany->uuid);
