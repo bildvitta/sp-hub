@@ -48,7 +48,7 @@ trait CompanyLinksHelper
     private function createOrUpdateRoles($userCompanyModel, $roles)
     {
         $roleClass = config('permission.models.role');
-        $roles = $roleClass::whereIn('uuid', $roles)->get(['name'])->pluck('name')->toArray();
+        $roles = $roleClass::whereIn('uuid', $roles)->get(['id'])->pluck('id')->toArray();
         $userCompanyModel->syncRoles($roles);
     }
 
