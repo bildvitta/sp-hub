@@ -51,13 +51,18 @@ trait CompanyLinksHelper
         Log::info('Roles Uuid: ', [
             'roles' => $roles,
             'userCompanyModel' => $userCompanyModel->uuid,
+            'model_roles' => $userCompanyModel->roles->pluck('uuid')->toArray(),
         ]);
+
         $roleClass = config('permission.models.role');
-        $rolesModels = $roleClass::whereIn('uuid', $roles)->get(['name'])->pluck('name')->toArray();
+        $rolesModels = $roleClass::whereIn('uuid', $roles)->get(['id'])->pluck('id')->toArray();
         $userCompanyModel->syncRoles($rolesModels);
+
+        $userCompanyModel->refresh();
         Log::info('Roles: ', [
             'roles' => $rolesModels,
             'userCompanyModel' => $userCompanyModel->uuid,
+            'model_roles' => $userCompanyModel->roles->pluck('uuid')->toArray(),
         ]);
     }
 
