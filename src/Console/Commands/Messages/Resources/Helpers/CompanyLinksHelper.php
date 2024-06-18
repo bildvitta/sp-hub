@@ -3,6 +3,7 @@
 namespace BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers;
 
 use BildVitta\SpHub\Events\Users\UserCompanyUpdated;
+use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Permission;
 use stdClass;
 
@@ -47,9 +48,17 @@ trait CompanyLinksHelper
 
     private function createOrUpdateRoles($userCompanyModel, $roles)
     {
+        Log::info('Roles Uuid: ', [
+            'roles' => $roles,
+            'userCompanyModel' => $userCompanyModel->uuid,
+        ]);
         $roleClass = config('permission.models.role');
-        $roles = $roleClass::whereIn('uuid', $roles)->get(['name'])->pluck('name')->toArray();
-        $userCompanyModel->syncRoles($roles);
+        $rolesModels = $roleClass::whereIn('uuid', $roles)->get(['name'])->pluck('name')->toArray();
+        $userCompanyModel->syncRoles($rolesModels);
+        Log::info('Roles: ', [
+            'roles' => $rolesModels,
+            'userCompanyModel' => $userCompanyModel->uuid,
+        ]);
     }
 
     private function userCompaniesDelete(stdClass $message): void
