@@ -3,7 +3,6 @@
 namespace BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers;
 
 use BildVitta\SpHub\Events\Users\UserCompanyUpdated;
-use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Permission;
 use stdClass;
 
@@ -16,7 +15,7 @@ trait CompanyLinksHelper
             ->where('uuid', $message->uuid)
             ->first();
         if (! $userCompanyModel) {
-            $userCompanyModel = new $userCompanyClass();
+            $userCompanyModel = new $userCompanyClass;
         }
 
         $userCompanyModel->uuid = $message->uuid;

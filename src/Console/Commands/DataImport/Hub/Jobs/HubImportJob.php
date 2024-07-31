@@ -2,8 +2,10 @@
 
 namespace BildVitta\SpHub\Console\Commands\DataImport\Hub\Jobs;
 
+use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\BrandImport;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\CompanyImport;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\ConfigConnection;
+use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubBrand;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubCompany;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubPermission;
 use BildVitta\SpHub\Console\Commands\DataImport\Hub\Resources\DbHubPositions;
@@ -85,6 +87,9 @@ class HubImportJob implements ShouldQueue
         $this->init();
 
         switch ($this->currentTable) {
+            case 'brands':
+                $this->importBrands();
+                break;
             case 'companies':
                 $this->importCompanies();
                 break;
@@ -119,6 +124,25 @@ class HubImportJob implements ShouldQueue
         $this->configConnection();
         $this->updateWorker(['status' => 'in_progress']);
         $this->currentTable = $this->worker->payload->tables[$this->worker->payload->table_index];
+    }
+
+    private function importBrands(): void
+    {
+        $dbHubBrand = app(DbHubBrand::class);
+        $brandImport = app(BrandImport::class);
+        $payload = $this->worker->payload;
+
+        if (is_null($payload->total)) {
+            $payload->total = $dbHubBrand->totalRecords();
+            $this->updateWorker(['payload' => $payload]);
+        }
+
+        $brands = collect($dbHubBrand->getBrands($payload->limit, $payload->offset));
+        foreach ($brands as $brand) {
+            $brandImport->import($brand);
+        }
+
+        $this->dispatchNextJob();
     }
 
     private function importPermissions(): void
