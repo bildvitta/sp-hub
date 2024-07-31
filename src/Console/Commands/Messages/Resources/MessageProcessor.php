@@ -2,6 +2,7 @@
 
 namespace BildVitta\SpHub\Console\Commands\Messages\Resources;
 
+use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\BrandsHelper;
 use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\CompanyHelper;
 use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\CompanyLinksHelper;
 use BildVitta\SpHub\Console\Commands\Messages\Resources\Helpers\LogHelper;
@@ -15,6 +16,7 @@ use Throwable;
 
 class MessageProcessor
 {
+    use BrandsHelper;
     use CompanyHelper;
     use CompanyLinksHelper;
     use LogHelper;
@@ -53,6 +55,8 @@ class MessageProcessor
      */
     public const USER_COMPANIES = 'user_companies';
 
+    public const BRANDS = 'brands';
+
     /**
      * @var string
      */
@@ -87,6 +91,9 @@ class MessageProcessor
             $operation = $properties[1];
 
             switch ($type) {
+                case self::BRANDS:
+                    $this->brands($messageData, $operation);
+                    break;
                 case self::USERS:
                     $this->users($messageData, $operation);
                     break;
@@ -111,6 +118,19 @@ class MessageProcessor
             if (app()->isLocal()) {
                 throw $exception;
             }
+        }
+    }
+
+    private function brands(stdClass $message, string $operation): void
+    {
+        switch ($operation) {
+            case self::CREATED:
+            case self::UPDATED:
+                $this->brandCreateOrUpdate($message);
+                break;
+            case self::DELETED:
+                $this->brandDelete($message);
+                break;
         }
     }
 
