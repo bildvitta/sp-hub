@@ -13,7 +13,7 @@ trait LogHelper
     private function logError(Throwable $exception, $message): void
     {
         try {
-            $worker = new Worker();
+            $worker = new Worker;
             $worker->type = 'rabbitmq.worker.error';
             $worker->payload = [
                 'message' => $message,
