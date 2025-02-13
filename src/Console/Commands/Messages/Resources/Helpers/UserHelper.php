@@ -29,6 +29,7 @@ trait UserHelper
         $user->deleted_at = $message->deleted_at;
 
         $user->company_id = $this->getCompanyId($message->company_uuid);
+        $user->main_company_id = $this->getCompanyId($message->main_company_uuid);
         $user->is_superuser = $message->is_superuser;
         $user->is_active = $message->is_active;
 
