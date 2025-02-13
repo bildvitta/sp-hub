@@ -29,6 +29,7 @@ class UserImport
         $userModel->is_active = $user->is_active;
         $userModel->is_superuser = $user->is_superuser;
         $userModel->company_id = $this->getCompanyId($user->hub_company_uuid);
+        $userModel->main_company_id = $this->getCompanyId($user->hub_main_company_uuid);
 
         if ($this->userHasExtraFields($userModel->getFillable())) {
             $userModel->document = $user->document;
