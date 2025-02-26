@@ -25,6 +25,7 @@ class CompanyImport
         if ($company->brand_uuid) {
             $companyModel->brand_id = HubBrand::withTrashed()->where('uuid', $company->brand_uuid)->value('id');
         }
+        $companyModel->public_list = $company->public_list;
         $companyModel->deleted_at = $company->deleted_at;
 
         $userModel = app(config('hub.model_user'));
