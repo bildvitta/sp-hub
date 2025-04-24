@@ -24,6 +24,7 @@ class UserCompanyImport
         $userCompanyModel->company_id = $this->getCompanyId($userCompany->hub_company_uuid);
         $userCompanyModel->position_id = $this->getPositionId($userCompany->hub_position_uuid);
         $userCompanyModel->is_seller = $userCompany->is_seller;
+        $userCompanyModel->is_post_construction = $userCompany->is_post_construction;
         $userCompanyModel->has_all_real_estate_developments = $userCompany->has_all_real_estate_developments;
         $userCompanyModel->has_specific_permissions = $userCompany->has_specific_permissions;
         $userCompanyModel->created_at = $userCompany->created_at;
