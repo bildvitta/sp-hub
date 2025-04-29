@@ -23,7 +23,7 @@ class RoleImport
         $roleModel->guard_name = 'web';
         $roleModel->hub_company_id = $this->getCompanyId($role->hub_company_uuid);
         $roleModel->has_all_real_estate_developments = $role->has_all_real_estate_developments;
-        $roleModel->is_post_construction = $role->is_post_construction;
+        $roleModel->is_post_construction = $role->is_post_construction ?? 0;
         $roleModel->created_at = $role->created_at;
         $roleModel->updated_at = $role->updated_at;
         $roleModel->save();
