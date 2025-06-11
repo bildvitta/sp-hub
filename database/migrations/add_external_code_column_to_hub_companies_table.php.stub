@@ -1,0 +1,30 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        $companyModel = app(config('hub.model_company'));
+
+        if (!Schema::hasColumn($companyModel->getTable(), 'external_code')) {
+            Schema::table($companyModel->getTable(), function (Blueprint $table) {
+                $table->string('external_code')->nullable();
+            });
+        }
+    }
+
+    public function down()
+    {
+        $companyModel = app(config('hub.model_company'));
+
+        if (Schema::hasColumn($companyModel->getTable(), 'external_code')) {
+            Schema::table($companyModel->getTable(), function (Blueprint $table) {
+                $table->dropColumn('external_code');
+            });
+        }
+    }
+};
