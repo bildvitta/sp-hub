@@ -27,6 +27,7 @@ class CompanyImport
         }
         $companyModel->public_list = $company->public_list;
         $companyModel->deleted_at = $company->deleted_at;
+        $companyModel->external_code = $company->external_code;
 
         $userModel = app(config('hub.model_user'));
         if ($this->userHasExtraFields($userModel->getFillable())) {
