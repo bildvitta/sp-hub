@@ -23,7 +23,7 @@ trait CompanyLinksHelper
         $userCompanyModel->company_id = $this->getCompanyId($message->company_uuid);
         $userCompanyModel->position_id = $this->getPositionId($message->position_uuid);
         $userCompanyModel->is_seller = $message->is_seller;
-        $userCompanyModel->is_post_construction = $message->is_post_construction;
+        $userCompanyModel->is_post_construction = $message->is_post_construction ?? 0;
         $userCompanyModel->has_all_real_estate_developments = $message->has_all_real_estate_developments;
         $userCompanyModel->has_specific_permissions = $message->has_specific_permissions;
         $userCompanyModel->created_at = $message->created_at;
