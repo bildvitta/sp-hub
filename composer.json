@@ -2,7 +2,7 @@
     "name": "bildvitta/sp-hub",
     "require": {
         "php": "^8.0|^8.1|^8.2|^8.3",
-        "illuminate/contracts": "^8.0|^9.0|^10.0|^11.0",
+        "illuminate/contracts": "^8.0|^9.0|^10.0|^11.0|^12.0",
         "php-amqplib/php-amqplib": "^3.2.0",
         "spatie/laravel-package-tools": "^1.12",
         "bildvitta/iss-sdk": "^v0.1.11",
