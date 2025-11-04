@@ -30,6 +30,8 @@ class UserCompanyImport
         $userCompanyModel->created_at = $userCompany->created_at;
         $userCompanyModel->updated_at = $userCompany->updated_at;
         $userCompanyModel->deleted_at = $userCompany->deleted_at;
+        $userCompanyModel->is_approving_proposal = (int) ($userCompany->is_approving_proposal ?? 0);
+        $userCompanyModel->approval_level = $userCompany->approval_level ?? null;
 
         $this->checkExistingUserCompany($userCompany->uuid);
 
