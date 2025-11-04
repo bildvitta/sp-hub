@@ -29,6 +29,8 @@ trait CompanyLinksHelper
         $userCompanyModel->created_at = $message->created_at;
         $userCompanyModel->updated_at = $message->updated_at;
         $userCompanyModel->deleted_at = $message->deleted_at;
+        $userCompanyModel->is_approving_proposal = (int) ($message->is_approving_proposal ?? 0);
+        $userCompanyModel->approval_level = $message->approval_level ?? null;
 
         $this->checkExistingUserCompany($message->uuid);
 
