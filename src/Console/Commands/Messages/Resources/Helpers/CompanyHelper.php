@@ -15,11 +15,14 @@ trait CompanyHelper
             $company->uuid = $message->uuid;
         }
         $company->name = $message->name;
-        $company->public_list = $message->public_list;
         $company->created_at = $message->created_at;
         $company->updated_at = $message->updated_at;
         $company->deleted_at = $message->deleted_at;
         $company->external_code = $message->external_code;
+
+        if (property_exists($message, 'public_list') && $message->public_list !== null) {
+            $company->public_list = $message->public_list;
+        }
 
         if (property_exists($message, 'main_company_uuid')) {
             $company->main_company_id = null;
