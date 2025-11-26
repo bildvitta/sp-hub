@@ -18,9 +18,15 @@ trait CompanyLinksHelper
             $userCompanyModel = new $userCompanyClass;
         }
 
+        $companyId = $this->getCompanyId($message->company_uuid);
+
+        if ($companyId === null) {
+            return;
+        }
+
         $userCompanyModel->uuid = $message->uuid;
         $userCompanyModel->user_id = $this->getUserId($message->user_uuid);
-        $userCompanyModel->company_id = $this->getCompanyId($message->company_uuid);
+        $userCompanyModel->company_id = $companyId;
         $userCompanyModel->position_id = $this->getPositionId($message->position_uuid);
         $userCompanyModel->is_seller = $message->is_seller;
         $userCompanyModel->is_post_construction = $message->is_post_construction ?? 0;
