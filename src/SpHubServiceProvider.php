@@ -32,6 +32,7 @@ class SpHubServiceProvider extends PackageServiceProvider
                 'add_public_list_on_hub_companies_table',
                 'add_external_code_column_to_hub_companies_table',
                 'add_is_approving_proposals_and_approval_level_to_user_companies_table',
+                'add_main_company_id_on_brands_table.php',
             ])
             ->runsMigrations();
     }
