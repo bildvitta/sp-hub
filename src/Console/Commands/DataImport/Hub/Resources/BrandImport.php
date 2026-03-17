@@ -8,19 +8,35 @@ class BrandImport
     {
         $brandModelFromConfig = app(config('hub.model_brand'));
 
-        $permissionModel = $brandModelFromConfig::where('uuid', $brand->uuid)
+        $brandModel = $brandModelFromConfig::where('uuid', $brand->uuid)
             ->first();
 
-        if (! $permissionModel) {
-            $permissionModel = new $brandModelFromConfig;
+        if (! $brandModel) {
+            $brandModel = new $brandModelFromConfig;
         }
 
-        $permissionModel->uuid = $brand->uuid;
-        $permissionModel->name = $brand->name;
-        $permissionModel->created_at = $brand->created_at;
-        $permissionModel->updated_at = $brand->updated_at;
-        $permissionModel->deleted_at = $brand->deleted_at;
+        $brandModel->uuid = $brand->uuid;
+        $brandModel->name = $brand->name;
+        $brandModel->main_company_id = $this->getCompanyId($brand->main_company_uuid);
+        $brandModel->created_at = $brand->created_at;
+        $brandModel->updated_at = $brand->updated_at;
+        $brandModel->deleted_at = $brand->deleted_at;
 
-        $permissionModel->save();
+        $brandModel->save();
+    }
+
+    private function getCompanyId(?string $hubCompanyUuid): ?int
+    {
+        if ($hubCompanyUuid) {
+            $companyClass = config('hub.model_company');
+            $hubCompany = $companyClass::withTrashed()
+                ->where('uuid', $hubCompanyUuid)
+                ->first();
+            if ($hubCompany) {
+                return $hubCompany->id;
+            }
+        }
+
+        return null;
     }
 }
